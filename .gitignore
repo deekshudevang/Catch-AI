@@ -61,3 +61,6 @@ recovery-engines/catch-carving-bin/
 testdisk*/
 *.zip
 scratch/
+carved_files/
+deep_recovery_*/
+recovery-service/dummy.dd

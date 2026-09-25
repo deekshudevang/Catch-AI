@@ -45,7 +45,8 @@ function App() {
                 <Route path="/cases"       element={<CaseList />} />
                 <Route path="/cases/:caseId" element={<CaseWorkspace />} />
                 <Route path="/cases/:caseId/*" element={<CaseWorkspace />} />
-                <Route path="/recovery"    element={<Recovery />} />
+                <Route path="/recovery/:recoveryId" element={<Recovery />} />
+                <Route path="/recovery/:recoveryId/*" element={<Recovery />} />
                 <Route path="/fragments"   element={<Fragments />} />
                 <Route path="/graph"       element={<GraphPage />} />
                 <Route path="/validation"  element={<Validation />} />

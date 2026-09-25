@@ -110,13 +110,18 @@ export interface IntegrationReport {
 }
 
 export interface RecoveryJob {
-  id:           number;
-  image_path:   string;
+  id:           number | string;
+  image_path?:   string;
+  evidence?:    string;
   status:       string;
   execution_id: string | null;
   fragments:    number;
   relationships:number;
   carved_files?: number;
+  artifacts?:   number;
+  started_at?:  string;
+  completed_at?: string;
+  duration?:    string;
   created_at:   string;
 }
 

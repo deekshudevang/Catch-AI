@@ -2,7 +2,7 @@
    CATCH-AI Global Styles
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import './styles/tokens.css';
 
 *, *::before, *::after {
@@ -222,6 +222,7 @@ input::placeholder, textarea::placeholder { color: var(--text-3); }
 .data-table {
   width: 100%;
   border-collapse: collapse;
+  font-family: var(--font-mono);
 }
 .data-table th {
   font-size: var(--text-xs);
@@ -235,9 +236,9 @@ input::placeholder, textarea::placeholder { color: var(--text-3); }
   white-space: nowrap;
 }
 .data-table td {
-  font-size: var(--text-base);
+  font-size: var(--text-sm);
   color: var(--text-2);
-  padding: 10px var(--sp-4);
+  padding: 8px var(--sp-4);
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
 }

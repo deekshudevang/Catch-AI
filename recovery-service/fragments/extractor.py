@@ -122,6 +122,7 @@ class FragmentExtractor:
                     magic_bytes=magic,
                     fragment_type=ftype,
                     file_type_hint=magic or footer,
+                    data=data,
                 ))
                 offset += len(data)
                 frag_id += 1

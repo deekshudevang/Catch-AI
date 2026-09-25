@@ -6,7 +6,7 @@ from typing import Any, Dict
 from .base import CATCHEngine
 from .constants import RECOVERY_ENGINES_DIR
 
-catch_fs_path = os.environ.get("CATCH_FS_PATH", os.path.join(RECOVERY_ENGINES_DIR, "catch-filesystem"))
+catch_fs_path = os.environ.get("CATCH_FS_PATH", os.path.join(os.path.dirname(RECOVERY_ENGINES_DIR), "forensic-engines", "catch-filesystem"))
 if catch_fs_path not in sys.path:
     sys.path.insert(0, catch_fs_path)
 

@@ -5,19 +5,20 @@
 
 :root {
   /* --- Backgrounds --- */
-  --bg:          #000000;
-  --surface:     #0D1117;
-  --surface-2:   #111720;
-  --surface-3:   #161E2A;
+  --bg:          #0E1117;
+  --surface:     #161B22;
+  --surface-2:   #1C2128;
+  --surface-3:   #22272E;
+  --surface-active: #2D333B;
 
   /* --- Borders --- */
-  --border:      #202936;
-  --border-2:    #2A3A50;
+  --border:      #30363D;
+  --border-2:    #484F58;
 
   /* --- Text --- */
-  --text:        #FFFFFF;
-  --text-2:      #E6E6E6;
-  --text-3:      #949494;
+  --text:        #C9D1D9;
+  --text-2:      #8B949E;
+  --text-3:      #6E7681;
 
   /* --- Primary Accent: Forensic Red --- */
   --cyan:        #C81B1C;

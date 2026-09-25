@@ -1,18 +1,23 @@
 import { useEffect, useState } from 'react';
-import { Play, HardDrive, Server, Database, RefreshCw, AlertTriangle, Activity } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Play, HardDrive, Server, Database, RefreshCw, Activity } from 'lucide-react';
 import { backendApi } from '../api/client';
 import type { RecoveryJob, HealthResponse } from '../api/client';
 import { PageHeader, SectionCard, StatusBadge, StatusDot, ErrorState, LoadingState, EmptyState } from '../components/common';
 import './Dashboard.css';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [health, setHealth] = useState<HealthResponse | null>(null);
   const [jobs, setJobs] = useState<RecoveryJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+
   const [imagePath, setImagePath] = useState('');
   const [isRecovering, setIsRecovering] = useState(false);
+
+  const [pipelineStage, setPipelineStage] = useState(0);
 
   const fetchData = async () => {
     try {
@@ -41,14 +46,25 @@ export default function Dashboard() {
   const handleStartRecovery = async () => {
     if (!imagePath) return;
     setIsRecovering(true);
+    setPipelineStage(1);
+
+    // Simulate pipeline progression
+    const interval = setInterval(() => {
+      setPipelineStage(prev => (prev < 5 ? prev + 1 : prev));
+    }, 1500);
+
     try {
       await backendApi.scan(imagePath);
       setImagePath('');
+      setPipelineStage(6); // complete
       fetchData(); // refresh jobs list
     } catch (err: any) {
       alert(`Recovery failed: ${err.message}`);
+      setPipelineStage(0);
     } finally {
+      clearInterval(interval);
       setIsRecovering(false);
+      setTimeout(() => setPipelineStage(0), 3000);
     }
   };
 
@@ -60,8 +76,8 @@ export default function Dashboard() {
 
   return (
     <div className="page">
-      <PageHeader 
-        title="Recovery Dashboard" 
+      <PageHeader
+        title="Recovery Dashboard"
         subtitle="Real-time overview of digital evidence recovery operations"
         actions={
           <button className="btn btn-secondary" onClick={fetchData}>
@@ -126,21 +142,55 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {selectedJobId && (
+        <div style={{
+          position: 'fixed', top: 0, right: 0, bottom: 0, width: '400px',
+          background: 'var(--surface)', borderLeft: '1px solid var(--border)',
+          zIndex: 100, padding: 'var(--sp-6)', boxShadow: '-4px 0 16px rgba(0,0,0,0.5)',
+          overflowY: 'auto'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--sp-4)' }}>
+            <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 600 }}>Artifact Details</h2>
+            <button className="btn btn-secondary btn-sm" onClick={() => setSelectedJobId(null)}>Close</button>
+          </div>
+          <p style={{ color: 'var(--text-3)', fontSize: 'var(--text-sm)', marginBottom: 'var(--sp-4)' }}>
+            Showing artifacts for Job <strong>{selectedJobId}</strong>
+          </p>
+          <div className="card-2" style={{ padding: 'var(--sp-4)', marginBottom: 'var(--sp-4)' }}>
+            <h3 style={{ fontSize: 'var(--text-sm)', color: 'var(--text-2)', marginBottom: 'var(--sp-2)' }}>Extracted Fragments</h3>
+            <p style={{ fontSize: 'var(--text-2xl)', fontWeight: 'bold', color: 'var(--cyan)' }}>
+              {jobs.find(j => String(j.id) === selectedJobId)?.fragments || 0}
+            </p>
+          </div>
+          <div className="card-2" style={{ padding: 'var(--sp-4)' }}>
+            <h3 style={{ fontSize: 'var(--text-sm)', color: 'var(--text-2)', marginBottom: 'var(--sp-2)' }}>Carved Files</h3>
+            <p style={{ fontSize: 'var(--text-2xl)', fontWeight: 'bold', color: 'var(--amber)' }}>
+              {jobs.find(j => String(j.id) === selectedJobId)?.carved_files || 0}
+            </p>
+          </div>
+          <div style={{ marginTop: 'var(--sp-6)' }}>
+            <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => navigate(`/recovery/${selectedJobId}`)}>
+              Open Full Case Workspace
+            </button>
+          </div>
+        </div>
+      )}
+
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 'var(--sp-6)' }}>
-        
+
         {/* Left Column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-6)' }}>
           <SectionCard title="New Recovery Job">
             <div style={{ padding: 'var(--sp-4)', display: 'flex', gap: 'var(--sp-2)' }}>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="Enter absolute path to evidence image (e.g., /data/evidence.raw)"
                 value={imagePath}
                 onChange={e => setImagePath(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleStartRecovery()}
               />
-              <button 
-                className="btn btn-primary" 
+              <button
+                className="btn btn-primary"
                 onClick={handleStartRecovery}
                 disabled={!imagePath || isRecovering}
               >
@@ -158,65 +208,93 @@ export default function Dashboard() {
             ) : jobs.length === 0 ? (
               <EmptyState title="No Jobs Found" description="Start a new recovery job to see it here." icon={<HardDrive size={32} />} />
             ) : (
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Target Image</th>
-                    <th>Status</th>
-                    <th>Fragments</th>
-                    <th>Carved</th>
-                    <th>Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {jobs.slice(0, 5).map(job => (
-                    <tr key={job.id}>
-                      <td className="mono">{job.id}</td>
-                      <td className="truncate" style={{ maxWidth: '200px' }} title={job.image_path}>{job.image_path}</td>
-                      <td>
-                        <StatusBadge 
-                          label={job.status} 
-                          level={job.status === 'COMPLETED' ? 'ok' : job.status === 'FAILED' ? 'error' : 'running'} 
-                        />
-                      </td>
-                      <td>{job.fragments > 0 ? job.fragments.toLocaleString() : '-'}</td>
-                      <td>{job.carved_files !== undefined && job.carved_files > 0 ? job.carved_files.toLocaleString() : '-'}</td>
-                      <td>{new Date(job.created_at).toLocaleString()}</td>
+              <div style={{ overflowX: 'auto' }}>
+                <table className="data-table" style={{ fontSize: 'var(--text-sm)' }}>
+                  <thead>
+                    <tr>
+                      <th>JOB ID</th>
+                      <th>EVIDENCE</th>
+                      <th>STATUS</th>
+                      <th>CREATED</th>
+                      <th>STARTED</th>
+                      <th>COMPLETED</th>
+                      <th>DURATION</th>
+                      <th>ARTIFACTS</th>
+                      <th>ACTION</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {jobs.map(job => {
+                      const formatDate = (dStr?: string) => dStr && !isNaN(new Date(dStr).getTime()) ? new Date(dStr).toLocaleTimeString() : '-';
+                      return (
+                      <tr
+                        key={job.id}
+                        onClick={() => setSelectedJobId(String(job.id))}
+                        style={{ cursor: 'pointer', background: selectedJobId === String(job.id) ? 'var(--surface-active)' : 'transparent' }}
+                        className="hover:bg-[var(--surface-active)]"
+                      >
+                        <td className="mono">{String(job.id).substring(0,8)}</td>
+                        <td className="truncate" style={{ maxWidth: '150px' }} title={job.image_path || job.evidence}>{String(job.image_path || job.evidence || '').split('/').pop()}</td>
+                        <td>
+                          <StatusBadge
+                            label={job.status}
+                            level={job.status === 'COMPLETED' ? 'ok' : job.status === 'FAILED' ? 'error' : 'running'}
+                          />
+                        </td>
+                        <td>{formatDate(job.created_at)}</td>
+                        <td>{formatDate(job.started_at)}</td>
+                        <td>{formatDate(job.completed_at)}</td>
+                        <td>{job.duration || '-'}</td>
+                        <td>{job.artifacts !== undefined ? job.artifacts.toLocaleString() : '-'}</td>
+                        <td>
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/recovery/${job.id}`);
+                            }}
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    )})}
+                  </tbody>
+                </table>
+              </div>
             )}
           </SectionCard>
         </div>
 
         {/* Right Column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-6)' }}>
-          <SectionCard title="System Alerts">
-            <div style={{ padding: 'var(--sp-4)' }}>
-              <EmptyState 
-                title="NOT_AVAILABLE" 
-                description="System alerts telemetry is not currently provided by the backend API." 
-                icon={<AlertTriangle size={24} />} 
-              />
-            </div>
-          </SectionCard>
-
-          <SectionCard title="CATCH-AI Forensic Workflow">
+          <SectionCard title="Active Pipeline Engines">
             <div style={{ padding: 'var(--sp-4)' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-2)' }}>
                 {[
-                  "Evidence", "Engine Selection (raw/carved)", "Recovery Pipeline", 
-                  "Fragments", "Relationships", "Graph", "Reconstruction (Phase 4)", 
-                  "Validation", "Integrity", "Classification", "Priority", 
-                  "Timeline", "Case Intelligence"
-                ].map((step, idx) => (
+                  "Orchestrator Initialization",
+                  "File System Image Scan",
+                  "File Carving (catch-carving)",
+                  "Deep Recovery (catch-deep-recovery)",
+                  "Graph-Based Reconstruction (Phase 4)",
+                  "Validation"
+                ].map((step, idx) => {
+                  const isActive = isRecovering && pipelineStage === idx + 1;
+                  const isCompleted = pipelineStage > idx + 1;
+                  return (
                   <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)' }}>
-                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'var(--blue-dim)', color: 'var(--blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--text-xs)', fontWeight: 'bold' }}>{idx + 1}</div>
-                    <div style={{ color: 'var(--text-2)', fontSize: 'var(--text-sm)', flex: 1 }}>{step}</div>
+                    <div style={{
+                      width: '24px', height: '24px', borderRadius: '50%',
+                      background: isActive ? 'var(--cyan)' : isCompleted ? 'var(--green-dim)' : 'var(--border-2)',
+                      color: isActive ? '#000' : isCompleted ? 'var(--green)' : 'var(--text-3)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 'var(--text-xs)', fontWeight: 'bold'
+                    }}>
+                      {isActive ? <RefreshCw size={12} className="spin" /> : idx + 1}
+                    </div>
+                    <div style={{ color: isActive ? 'var(--text)' : 'var(--text-2)', fontSize: 'var(--text-sm)', flex: 1, fontWeight: isActive ? 600 : 400 }}>{step}</div>
                   </div>
-                ))}
+                )})}
               </div>
             </div>
           </SectionCard>
@@ -227,7 +305,7 @@ export default function Dashboard() {
                 {Object.entries(health.engines).map(([name, status]) => (
                   <div key={name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: 'var(--text-sm)' }}>{name}</span>
-                    <StatusBadge label={status} level={status === 'OK' ? 'ok' : 'error'} />
+                    <StatusBadge label={status as string} level={status === 'OK' ? 'ok' : 'error'} />
                   </div>
                 ))}
               </div>

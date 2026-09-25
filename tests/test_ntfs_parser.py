@@ -3,7 +3,7 @@ import sys
 import os
 
 # Add src to path so we can import ntfs_parser
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../recovery-engines/catch-filesystem/src')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../forensic-engines/catch-filesystem/src')))
 from ntfs_parser import NTFSParser
 
 class TestNTFSParser(unittest.TestCase):

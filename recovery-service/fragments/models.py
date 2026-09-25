@@ -11,6 +11,7 @@ class Fragment(BaseModel):
     magic_bytes: Optional[str] = None
     fragment_type: str = "unknown"  # header / body / footer / orphan
     file_type_hint: Optional[str] = None
+    data: Optional[bytes] = None
 
 
 class FragmentFeatures(BaseModel):
@@ -27,8 +28,10 @@ class FragmentFeatures(BaseModel):
 class FragmentRelationship(BaseModel):
     source_id: str
     target_id: str
-    score: float             # 0.0 – 1.0
-    relationship_type: str   # sequential / referenced / signature_match / entropy_match
+    score: Optional[float] = None # 0.0 – 1.0, only when mathematically justified
+    relationship_type: str   # sequential / referenced / signature_match / etc.
+    evidence: str            # evidence/reason
+    method: str              # deterministic, structural, or heuristic
 
 
 class GraphNode(BaseModel):
