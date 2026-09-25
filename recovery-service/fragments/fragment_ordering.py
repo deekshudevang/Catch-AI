@@ -1,32 +1,39 @@
+from typing import Dict, List, Any
 
-from typing import List
-from .models import FragmentGraphResult
+def _weight(edge: Any) -> float:
+    value = edge.get("weight", edge.get("relationship_score", edge.get("score", 0.0))) if isinstance(edge, dict) else getattr(edge, "weight", getattr(edge, "score", 0.0))
+    try: return float(value)
+    except (TypeError, ValueError): return 0.0
 
-def order_fragments(graph: FragmentGraphResult) -> List[str]:
-    # Directed graph traversal
-    nodes = {n.id: n for n in graph.nodes}
-    edges = graph.edges
-    
-    in_degree = {n: 0 for n in nodes}
-    out_edges = {n: [] for n in nodes}
-    for e in edges:
-        in_degree[e.target] += 1
-        out_edges[e.source].append(e)
-        
-    start_nodes = [n for n, deg in in_degree.items() if deg == 0]
-    if not start_nodes:
-        start_nodes = list(nodes.keys())
-        
-    ordered = []
-    current = start_nodes[0]
-    while current:
-        ordered.append(current)
-        outs = out_edges[current]
-        if not outs:
-            break
-        outs.sort(key=lambda e: e.weight, reverse=True)
-        current = outs[0].target
-        if current in ordered: # loop prevention
-            break
-            
+def _source(edge: Any):
+    return edge.get("source") if isinstance(edge, dict) else getattr(edge, "source", None)
+
+def _target(edge: Any):
+    return edge.get("target") if isinstance(edge, dict) else getattr(edge, "target", None)
+
+def order_fragments(graph: Any) -> List[str]:
+    """Deterministic, cycle-safe ordering compatible with legacy and Pydantic graphs."""
+    raw_nodes = getattr(graph, "nodes", None)
+    nodes: Dict[str, Any] = raw_nodes if isinstance(raw_nodes, dict) else {n.id: n for n in (raw_nodes or [])}
+    if not nodes: return []
+
+    out: Dict[str, List[Any]] = {node_id: [] for node_id in nodes}
+    indegree = {node_id: 0 for node_id in nodes}
+    for edge in getattr(graph, "edges", None) or []:
+        s, t = _source(edge), _target(edge)
+        if s in nodes and t in nodes and s != t:
+            out[s].append(edge)
+            indegree[t] += 1
+    for edges in out.values():
+        edges.sort(key=lambda e: (-_weight(e), _target(e) or ""))
+
+    starts = sorted(k for k, v in indegree.items() if v == 0) or sorted(nodes)
+    ordered, visited = [], set()
+    current = starts[0]
+    while current is not None and current not in visited:
+        visited.add(current); ordered.append(current)
+        choices = [e for e in out.get(current, []) if _target(e) not in visited]
+        current = _target(choices[0]) if choices else None
+
+    ordered.extend(k for k in sorted(nodes) if k not in visited)
     return ordered
