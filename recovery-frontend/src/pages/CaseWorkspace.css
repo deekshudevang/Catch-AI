@@ -1,0 +1,145 @@
+.case-workspace {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.case-header {
+  padding: 0 0 var(--sp-6) 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--sp-6);
+}
+
+.case-breadcrumbs {
+  font-size: var(--text-sm);
+  color: var(--text-3);
+  margin-bottom: var(--sp-2);
+}
+
+.case-breadcrumbs a {
+  color: var(--text-2);
+  text-decoration: none;
+}
+
+.case-breadcrumbs a:hover {
+  color: var(--cyan);
+}
+
+.case-breadcrumbs span {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.case-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.case-header-info h1 {
+  font-size: var(--text-2xl);
+  margin: 0 0 var(--sp-2) 0;
+}
+
+.case-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--text-sm);
+}
+
+.case-meta .divider {
+  color: var(--border);
+}
+
+.case-header-actions {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.case-body {
+  display: flex;
+  flex: 1;
+  gap: var(--sp-8);
+  min-height: 0;
+}
+
+/* Nav */
+.case-nav {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.case-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  background: transparent;
+  border: none;
+  color: var(--text-2);
+  font-size: var(--text-sm);
+  text-align: left;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.case-nav-item:hover {
+  background: var(--bg-1);
+  color: var(--text);
+}
+
+.case-nav-item.active {
+  background: var(--cyan-dim);
+  color: var(--cyan);
+  font-weight: 500;
+}
+
+.case-content {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+.overview-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--sp-4);
+}
+
+.pipeline-steps {
+  overflow-x: auto;
+}
+
+.pipeline-step {
+  min-width: 100px;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .case-header-content {
+    flex-direction: column;
+    gap: var(--sp-4);
+  }
+  
+  .case-body {
+    flex-direction: column;
+  }
+  
+  .case-nav {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: var(--sp-2);
+  }
+  
+  .case-nav-item {
+    padding: var(--sp-2) var(--sp-3);
+    white-space: nowrap;
+  }
+}

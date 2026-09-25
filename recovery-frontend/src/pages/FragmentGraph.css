@@ -1,0 +1,174 @@
+.fragment-graph-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+.toolbar {
+  padding: 0.5rem;
+  border-radius: var(--radius-full);
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--glass-border);
+}
+
+.search-box input {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  outline: none;
+  font-family: var(--font-sans);
+  width: 150px;
+}
+
+.search-box input::placeholder {
+  color: var(--text-muted);
+}
+
+.divider {
+  width: 1px;
+  height: 20px;
+  background: var(--glass-border);
+  margin: 0 0.5rem;
+}
+
+.graph-container {
+  flex-grow: 1;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: radial-gradient(circle at center, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+}
+
+.graph-svg {
+  cursor: grab;
+}
+
+.graph-svg:active {
+  cursor: grabbing;
+}
+
+/* Edges */
+.graph-edge line {
+  stroke: var(--text-muted);
+  opacity: 0.3;
+  transition: all var(--transition-normal);
+}
+
+.graph-edge text {
+  fill: var(--text-muted);
+  font-size: 10px;
+  font-family: var(--font-mono);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.graph-edge.highlighted line {
+  stroke: var(--accent-blue);
+  opacity: 0.8;
+}
+
+.graph-edge.highlighted text {
+  opacity: 1;
+  fill: var(--text-primary);
+}
+
+/* Nodes */
+.graph-node {
+  cursor: pointer;
+  transition: transform var(--transition-normal);
+}
+
+.graph-node circle {
+  fill: var(--bg-panel);
+  stroke: var(--glass-border);
+  stroke-width: 2;
+  transition: all var(--transition-normal);
+}
+
+.graph-node.header circle { stroke: var(--accent-blue); }
+.graph-node.body circle { stroke: var(--accent-purple); }
+.graph-node.footer circle { stroke: var(--accent-green); }
+.graph-node.orphan circle { stroke: var(--accent-yellow); }
+
+.graph-node text {
+  fill: var(--text-secondary);
+  font-size: 12px;
+  pointer-events: none;
+  transition: all var(--transition-normal);
+}
+
+.node-icon {
+  color: var(--text-primary);
+  pointer-events: none;
+}
+
+.graph-node:hover circle,
+.graph-node.active circle {
+  fill: var(--bg-secondary);
+  stroke-width: 3;
+}
+
+.graph-node:hover text,
+.graph-node.active text {
+  fill: var(--text-primary);
+  font-weight: 500;
+}
+
+/* Floating Properties Panel */
+.properties-panel {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 280px;
+  padding: 1.5rem;
+  background: rgba(19, 19, 26, 0.85);
+}
+
+.properties-panel h3 {
+  font-size: 1rem;
+  margin-bottom: 1.25rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 0.5rem;
+}
+
+.props-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.prop-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.prop-label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.prop-value {
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.type-badge {
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--glass-highlight);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
