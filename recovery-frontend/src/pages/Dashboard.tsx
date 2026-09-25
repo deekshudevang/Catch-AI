@@ -55,6 +55,7 @@ export default function Dashboard() {
   // Compute aggregate stats from jobs
   const completedJobs = jobs.filter(j => j.status === 'COMPLETED');
   const totalFragments = completedJobs.reduce((sum, j) => sum + (j.fragments || 0), 0);
+  const totalCarved = completedJobs.reduce((sum, j) => sum + (j.carved_files || 0), 0);
   const activeJobs = jobs.filter(j => j.status === 'RUNNING' || j.status === 'PROCESSING');
 
   return (
@@ -88,6 +89,16 @@ export default function Dashboard() {
           <div>
             <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fragments Recovered</div>
             <div style={{ fontSize: 'var(--text-xl)', fontWeight: 600 }}>{totalFragments.toLocaleString()}</div>
+          </div>
+        </div>
+
+        <div className="card-2" style={{ padding: 'var(--sp-4)', display: 'flex', alignItems: 'center', gap: 'var(--sp-4)' }}>
+          <div style={{ padding: 'var(--sp-3)', background: 'var(--blue-dim)', color: 'var(--blue)', borderRadius: 'var(--r-md)' }}>
+            <Server size={24} />
+          </div>
+          <div>
+            <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Carved Files</div>
+            <div style={{ fontSize: 'var(--text-xl)', fontWeight: 600 }}>{totalCarved.toLocaleString()}</div>
           </div>
         </div>
 
@@ -154,6 +165,7 @@ export default function Dashboard() {
                     <th>Target Image</th>
                     <th>Status</th>
                     <th>Fragments</th>
+                    <th>Carved</th>
                     <th>Date</th>
                   </tr>
                 </thead>
@@ -169,6 +181,7 @@ export default function Dashboard() {
                         />
                       </td>
                       <td>{job.fragments > 0 ? job.fragments.toLocaleString() : '-'}</td>
+                      <td>{job.carved_files !== undefined && job.carved_files > 0 ? job.carved_files.toLocaleString() : '-'}</td>
                       <td>{new Date(job.created_at).toLocaleString()}</td>
                     </tr>
                   ))}

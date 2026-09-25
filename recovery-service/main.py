@@ -169,30 +169,42 @@ def recover_scan(req: RecoverRequest):
         if os.path.exists(local_path):
             img_path = local_path
             
-    # Route via orchestrator
+    # Route via orchestrator for filesystem and carving
     orchestrator_result = orchestrator_service.trigger_engine("filesystem", img_path)
+    carving_result = orchestrator_service.trigger_engine("carving", img_path)
     
-    if orchestrator_result["status"] == "FAILED":
-        raise HTTPException(status_code=500, detail=orchestrator_result["logs"])
+    if orchestrator_result["status"] == "FAILED" and carving_result["status"] == "FAILED":
+        raise HTTPException(status_code=500, detail="Both engines failed")
         
-    engine_result = orchestrator_result.get("result", {})
-    recovery_id = orchestrator_result["execution_id"]
+    engine_result = orchestrator_result.get("result") or {}
+    carving_engine_result = carving_result.get("result") or {}
+    recovery_id = orchestrator_result.get("execution_id") or carving_result.get("execution_id")
     
+    from datetime import datetime
     result = {
         "execution_id": recovery_id,
+        "job_id": recovery_id,
         "image_path": img_path,
         "fragments_extracted": engine_result.get("files_found", 0),
         "relationships_scored": 0,
         "graph": {"nodes": engine_result.get("files_found", 0), "edges": 0},
+        "carved_files": carving_engine_result.get("files_found", 0),
+        "files": carving_engine_result.get("files", []),
         "status": "COMPLETED",
-        "engine_logs": orchestrator_result["logs"]
+        "engine_logs": orchestrator_result.get("logs", []) + carving_result.get("logs", []),
+        "execution_trace": carving_result.get("result", {})
     }
     
     RECOVERY_RESULTS[recovery_id] = result
     
     return {
         "success": True,
+        "job_id": recovery_id,
         "jobId": recovery_id,
+        "status": "COMPLETED",
+        "total_files_found": carving_engine_result.get("files_found", 0),
+        "execution_trace": carving_result.get("result", {}),
+        "files": carving_engine_result.get("files", []),
         "data": result
     }
 

@@ -45,6 +45,7 @@ export interface RecoveryResult {
   fragments_extracted:   number;
   relationships_scored:  number;
   graph: { nodes: number; edges: number };
+  carved_files?: number;
   status: string;
 }
 
@@ -115,6 +116,7 @@ export interface RecoveryJob {
   execution_id: string | null;
   fragments:    number;
   relationships:number;
+  carved_files?: number;
   created_at:   string;
 }
 

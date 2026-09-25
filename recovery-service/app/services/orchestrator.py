@@ -139,6 +139,9 @@ class Orchestrator:
                 duration_ms=duration_ms,
                 result=persisted_result,
                 logs=logs,
+                version=getattr(engine_instance, "version", None) or (result.get("version") if result and isinstance(result, dict) else None),
+                output_reference=result.get("output_reference") if result and isinstance(result, dict) else kwargs.get("output_dir"),
+                exit_code=0 if status == "SUCCESS" else 1,
             )
             db.add(log_entry)
             db.commit()

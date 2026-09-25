@@ -18,4 +18,7 @@ class ExecutionLog(Base):
     duration_ms = Column(Integer, nullable=True)
     result = Column(JSON, nullable=True)
     logs = Column(String, nullable=True)
+    version = Column(String, nullable=True)
+    output_reference = Column(String, nullable=True)
+    exit_code = Column(Integer, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
