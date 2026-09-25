@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+"""Tests for the filter file CLI arguments helper."""
+
+import sys
+import unittest
+
+from plaso.cli import tools
+from plaso.cli.helpers import filter_file
+from plaso.lib import errors
+
+from tests.cli import test_lib as cli_test_lib
+
+
+class FilterFileArgumentsHelperTest(cli_test_lib.CLIToolTestCase):
+    """Tests for the filter file CLI arguments helper."""
+
+    # pylint: disable=no-member,protected-access
+
+    _PYTHON3_13_OR_LATER = sys.version_info[0:2] >= (3, 13)
+
+    if _PYTHON3_13_OR_LATER:
+        _EXPECTED_OUTPUT = f"""\
+usage: cli_helper.py [-f FILE_FILTER]
+
+Test argument parser.
+
+{cli_test_lib.ARGPARSE_OPTIONS:s}:
+  -f, --filter-file, --filter_file, --file-filter, --file_filter FILE_FILTER
+                        List of files to include for targeted collection of
+                        files to parse, one line per file path, setup is
+                        /path|file - where each element can contain either a
+                        variable set in the preprocessing stage or a regular
+                        expression.
+"""
+
+    else:
+        _EXPECTED_OUTPUT = f"""\
+usage: cli_helper.py [-f FILE_FILTER]
+
+Test argument parser.
+
+{cli_test_lib.ARGPARSE_OPTIONS:s}:
+  -f FILE_FILTER, --filter-file FILE_FILTER, --filter_file FILE_FILTER, --file-filter FILE_FILTER, --file_filter FILE_FILTER
+                        List of files to include for targeted collection of
+                        files to parse, one line per file path, setup is
+                        /path|file - where each element can contain either a
+                        variable set in the preprocessing stage or a regular
+                        expression.
+"""
+
+    def testAddArguments(self):
+        """Tests the AddArguments function."""
+        argument_parser = self._GetTestArgumentParser("cli_helper.py")
+
+        filter_file.FilterFileArgumentsHelper.AddArguments(argument_parser)
+
+        output = self._RunArgparseFormatHelp(argument_parser)
+        self.assertEqual(output, self._EXPECTED_OUTPUT)
+
+    def testParseOptions(self):
+        """Tests the ParseOptions function."""
+        options = cli_test_lib.TestOptions()
+        options.file_filter = self._GetTestFilePath(["testdir", "filter2.txt"])
+
+        test_tool = tools.CLITool()
+        filter_file.FilterFileArgumentsHelper.ParseOptions(options, test_tool)
+
+        self.assertEqual(test_tool._filter_file, options.file_filter)
+
+        with self.assertRaises(errors.BadConfigObject):
+            filter_file.FilterFileArgumentsHelper.ParseOptions(options, None)
+
+        # TODO: improve test coverage.
+
+
+if __name__ == "__main__":
+    unittest.main()

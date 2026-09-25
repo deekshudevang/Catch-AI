@@ -1,0 +1,103 @@
+stages:
+  - validate
+  - test
+  - build
+  - package
+
+variables:
+  DOCKER_TLS_CERTDIR: "/certs"
+
+server_validate:
+  stage: validate
+  image: node:22-bookworm
+  before_script:
+    - apt-get update
+    - apt-get install -y --no-install-recommends python3 python3-pip python3-venv
+    - python3 -m venv /tmp/forensicai-venv
+    - /tmp/forensicai-venv/bin/pip install --no-cache-dir -r server/python_parsers/requirements.txt -r server/ml/requirements.txt
+    - cd server
+    - npm ci
+  script:
+    - find . -name "*.js" -not -path "./node_modules/*" -print0 | xargs -0 -n1 node --check
+    - /tmp/forensicai-venv/bin/python -m py_compile python_parsers/parse_artifact.py ml/anomaly_detector.py
+
+parser_phase_smoke:
+  stage: test
+  image: node:22-bookworm
+  services:
+    - name: mongo:7
+      alias: mongo
+    - name: redis:7-alpine
+      alias: redis
+  needs:
+    - server_validate
+  variables:
+    NODE_ENV: test
+    PORT: "5000"
+    MONGODB_URI: mongodb://mongo:27017/forensicai_ci
+    REDIS_URL: redis://redis:6379
+    JWT_SECRET: gitlab-ci-parser-secret
+    EVIDENCE_ENCRYPTION_KEY: 000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f
+    EVIDENCE_KEY_ID: gitlab-ci-parser-key
+    PYTHON_BIN: /tmp/forensicai-venv/bin/python
+    PARSER_TEST_API_URL: http://127.0.0.1:5000/api/parse
+    PARSER_MAX_RECORDS: "25"
+    ML_CONTAMINATION: "0.15"
+  before_script:
+    - apt-get update
+    - apt-get install -y --no-install-recommends python3 python3-pip python3-venv curl
+    - python3 -m venv /tmp/forensicai-venv
+    - /tmp/forensicai-venv/bin/pip install --no-cache-dir -r server/python_parsers/requirements.txt -r server/ml/requirements.txt
+    - cd server
+    - npm ci
+  script:
+    - npm start > ../server-ci.log 2>&1 &
+    - |
+      for i in $(seq 1 40); do
+        curl -fsS http://127.0.0.1:5000/api/health && break
+        sleep 2
+        if [ "$i" = "40" ]; then
+          cat ../server-ci.log
+          exit 1
+        fi
+      done
+    - npm run test:parser-phase
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - server-ci.log
+
+client_build:
+  stage: build
+  image: node:22-bookworm
+  before_script:
+    - cd client
+    - npm ci
+  script:
+    - npm run build
+  artifacts:
+    expire_in: 7 days
+    paths:
+      - client/dist/
+
+docker_package:
+  stage: package
+  image: docker:27
+  services:
+    - docker:27-dind
+  needs:
+    - server_validate
+    - parser_phase_smoke
+    - client_build
+  script:
+    - docker build -f Dockerfile.server -t "$CI_REGISTRY_IMAGE/server:$CI_COMMIT_SHA" .
+    - docker build -f Dockerfile.client -t "$CI_REGISTRY_IMAGE/client:$CI_COMMIT_SHA" .
+    - |
+      if [ -n "$CI_REGISTRY_USER" ] && [ -n "$CI_REGISTRY_PASSWORD" ]; then
+        docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+        docker push "$CI_REGISTRY_IMAGE/server:$CI_COMMIT_SHA"
+        docker push "$CI_REGISTRY_IMAGE/client:$CI_COMMIT_SHA"
+      fi
+  rules:
+    - if: '$CI_COMMIT_BRANCH'

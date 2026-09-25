@@ -1,0 +1,7 @@
+# pytsk3 is optional but strongly recommended: it enables real filesystem
+# metadata recovery (correct filenames, sizes, timestamps, defragmented
+# reads) rather than pure raw signature carving.
+#
+# On Debian/Kali it usually needs build essentials first:
+#   sudo apt install build-essential python3-dev libtsk-dev
+pytsk3>=20230722

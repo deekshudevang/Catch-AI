@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+"""Tests for the language CLI arguments helper."""
+
+import unittest
+
+from plaso.cli import tools
+from plaso.cli.helpers import language
+from plaso.lib import errors
+
+from tests.cli import test_lib as cli_test_lib
+
+
+class LanguagergumentsHelperTest(cli_test_lib.CLIToolTestCase):
+    """Tests for the language CLI arguments helper."""
+
+    # pylint: disable=no-member,protected-access
+
+    _EXPECTED_OUTPUT = f"""\
+usage: cli_helper.py [--language LANGUAGE_TAG]
+
+Test argument parser.
+
+{cli_test_lib.ARGPARSE_OPTIONS:s}:
+  --language LANGUAGE_TAG
+                        The preferred language, which is used for extracting
+                        and formatting Windows EventLog message strings. Use "
+                        --language list" to see a list of supported language
+                        tags. The en-US (LCID 0x0409) language is used as
+                        fallback if preprocessing could not determine the
+                        system language or no language information is
+                        available in the winevt-rc.db database.
+"""
+
+    def testAddArguments(self):
+        """Tests the AddArguments function."""
+        argument_parser = self._GetTestArgumentParser("cli_helper.py")
+
+        language.LanguageArgumentsHelper.AddArguments(argument_parser)
+
+        output = self._RunArgparseFormatHelp(argument_parser)
+        self.assertEqual(output, self._EXPECTED_OUTPUT)
+
+    def testParseOptions(self):
+        """Tests the ParseOptions function."""
+        options = cli_test_lib.TestOptions()
+        options.preferred_language = "is"
+
+        test_tool = tools.CLITool()
+        language.LanguageArgumentsHelper.ParseOptions(options, test_tool)
+
+        self.assertEqual(test_tool._preferred_language, options.preferred_language)
+
+        with self.assertRaises(errors.BadConfigObject):
+            language.LanguageArgumentsHelper.ParseOptions(options, None)
+
+
+if __name__ == "__main__":
+    unittest.main()

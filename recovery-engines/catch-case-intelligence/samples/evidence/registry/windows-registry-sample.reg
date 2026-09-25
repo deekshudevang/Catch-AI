@@ -1,0 +1,10 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run]
+"Updater"="C:\\Users\\administrator\\AppData\\Roaming\\updater.exe"
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce]
+"OneTimeTask"="powershell.exe -ExecutionPolicy Bypass -File C:\\Temp\\payload.ps1"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SuspiciousSvc]
+"ImagePath"="C:\\Temp\\payload.exe"

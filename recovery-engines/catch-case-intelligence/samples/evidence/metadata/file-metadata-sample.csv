@@ -1,0 +1,4 @@
+path,owner,created,modified,accessed,size,sha256
+C:\Temp\payload.exe,administrator,2026-05-26T09:15:12Z,2026-05-26T09:15:12Z,2026-05-26T09:16:01Z,53248,275a021b1b46522c07ef9c80d4141d8c
+C:\Users\administrator\Downloads\archive.zip,administrator,2026-05-26T09:21:10Z,2026-05-26T09:22:18Z,2026-05-26T09:22:21Z,10485760,4a5e1e4ca3261730d114f201d120a11a
+C:\Windows\System32\drivers\etc\hosts,SYSTEM,2026-04-02T11:02:00Z,2026-05-26T09:18:31Z,2026-05-26T09:18:31Z,1024,

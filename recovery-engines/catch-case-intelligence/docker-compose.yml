@@ -1,0 +1,95 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - redis
+    ports:
+      - "5000:5000"
+    environment:
+      PORT: 5000
+      MONGODB_URI: mongodb://mongo:27017/forensicai
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-change-this-secret}
+      AI_PROVIDER: ${AI_PROVIDER:-openai}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-gpt-4}
+      ABUSEIPDB_API_KEY: ${ABUSEIPDB_API_KEY:-}
+      VIRUSTOTAL_API_KEY: ${VIRUSTOTAL_API_KEY:-}
+      UPLOAD_DIR: /data/uploads
+      EVIDENCE_STORE_DIR: /data/evidence-store
+      WORKING_DIR: /data/tmp/processing
+      REPORT_EXPORT_DIR: /data/tmp/exports
+      EVIDENCE_ENCRYPTION_KEY: ${EVIDENCE_ENCRYPTION_KEY:-000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f}
+      EVIDENCE_KEY_ID: ${EVIDENCE_KEY_ID:-local-compose-key}
+      PARSER_MAX_RECORDS: ${PARSER_MAX_RECORDS:-5000}
+      ML_CONTAMINATION: ${ML_CONTAMINATION:-0.15}
+    volumes:
+      - server-data:/data
+
+  evidence-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - redis
+    command: ["npm", "run", "worker:evidence"]
+    environment:
+      NODE_ENV: production
+      MONGODB_URI: mongodb://mongo:27017/forensicai
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-change-this-secret}
+      AI_PROVIDER: ${AI_PROVIDER:-openai}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-gpt-4}
+      ABUSEIPDB_API_KEY: ${ABUSEIPDB_API_KEY:-}
+      VIRUSTOTAL_API_KEY: ${VIRUSTOTAL_API_KEY:-}
+      UPLOAD_DIR: /data/uploads
+      EVIDENCE_STORE_DIR: /data/evidence-store
+      WORKING_DIR: /data/tmp/processing
+      REPORT_EXPORT_DIR: /data/tmp/exports
+      EVIDENCE_ENCRYPTION_KEY: ${EVIDENCE_ENCRYPTION_KEY:-000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f}
+      EVIDENCE_KEY_ID: ${EVIDENCE_KEY_ID:-local-compose-key}
+      EVIDENCE_WORKER_CONCURRENCY: ${EVIDENCE_WORKER_CONCURRENCY:-2}
+      PARSER_MAX_RECORDS: ${PARSER_MAX_RECORDS:-5000}
+      ML_CONTAMINATION: ${ML_CONTAMINATION:-0.15}
+    volumes:
+      - server-data:/data
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+      args:
+        VITE_API_URL: /api
+    restart: unless-stopped
+    depends_on:
+      - server
+    ports:
+      - "5173:80"
+
+volumes:
+  mongo-data:
+  redis-data:
+  server-data:

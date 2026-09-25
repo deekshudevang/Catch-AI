@@ -1,0 +1,99 @@
+#!/usr/bin/env python3
+"""Tests for the nsrlsvr analysis plugin CLI arguments helper."""
+
+import sys
+import unittest
+
+from plaso.analysis import nsrlsvr
+from plaso.lib import errors
+from plaso.cli.helpers import nsrlsvr_analysis
+
+from tests.cli import test_lib as cli_test_lib
+from tests.cli.helpers import test_lib
+
+
+class NsrlsvrAnalysisArgumentsHelperTest(test_lib.AnalysisPluginArgumentsHelperTest):
+    """Tests the nsrlsvr analysis plugin CLI arguments helper."""
+
+    # pylint: disable=no-member,protected-access
+
+    _PYTHON3_13_OR_LATER = sys.version_info[0:2] >= (3, 13)
+
+    if _PYTHON3_13_OR_LATER:
+        _EXPECTED_OUTPUT = f"""\
+usage: cli_helper.py [--nsrlsvr-hash HASH] [--nsrlsvr-host HOST]
+                     [--nsrlsvr-label LABEL] [--nsrlsvr-port PORT]
+
+Test argument parser.
+
+{cli_test_lib.ARGPARSE_OPTIONS:s}:
+  --nsrlsvr-hash, --nsrlsvr_hash HASH
+                        Type of hash to use to query nsrlsvr instance, the
+                        default is: md5. Supported options: md5, sha1
+  --nsrlsvr-host, --nsrlsvr_host HOST
+                        Hostname or IP address of the nsrlsvr instance to
+                        query, the default is: localhost
+  --nsrlsvr-label, --nsrlsvr_label LABEL
+                        Label to apply to events, the default is:
+                        nsrl_present.
+  --nsrlsvr-port, --nsrlsvr_port PORT
+                        Port number of the nsrlsvr instance to query, the
+                        default is: 9120.
+"""
+
+    else:
+        _EXPECTED_OUTPUT = f"""\
+usage: cli_helper.py [--nsrlsvr-hash HASH] [--nsrlsvr-host HOST]
+                     [--nsrlsvr-label LABEL] [--nsrlsvr-port PORT]
+
+Test argument parser.
+
+{cli_test_lib.ARGPARSE_OPTIONS:s}:
+  --nsrlsvr-hash HASH, --nsrlsvr_hash HASH
+                        Type of hash to use to query nsrlsvr instance, the
+                        default is: md5. Supported options: md5, sha1
+  --nsrlsvr-host HOST, --nsrlsvr_host HOST
+                        Hostname or IP address of the nsrlsvr instance to
+                        query, the default is: localhost
+  --nsrlsvr-label LABEL, --nsrlsvr_label LABEL
+                        Label to apply to events, the default is:
+                        nsrl_present.
+  --nsrlsvr-port PORT, --nsrlsvr_port PORT
+                        Port number of the nsrlsvr instance to query, the
+                        default is: 9120.
+"""
+
+    def testAddArguments(self):
+        """Tests the AddArguments function."""
+        argument_parser = self._GetTestArgumentParser("cli_helper.py")
+
+        nsrlsvr_analysis.NsrlsvrAnalysisArgumentsHelper.AddArguments(argument_parser)
+
+        output = self._RunArgparseFormatHelp(argument_parser)
+        self.assertEqual(output, self._EXPECTED_OUTPUT)
+
+    def testParseOptions(self):
+        """Tests the ParseOptions function."""
+        options = cli_test_lib.TestOptions()
+        analysis_plugin = nsrlsvr.NsrlsvrAnalysisPlugin()
+
+        options.nsrlsvr_hash = "sha1"
+        options.nsrlsvr_host = "127.0.0.1"
+        options.nsrlsvr_port = 9120
+        options.nsrlsvr_label = "NSRLSVR"
+
+        with self.assertRaises(errors.BadConfigOption):
+            nsrlsvr_analysis.NsrlsvrAnalysisArgumentsHelper.ParseOptions(
+                options, analysis_plugin
+            )
+
+        self.assertEqual(analysis_plugin._label, "NSRLSVR")
+        self.assertEqual(analysis_plugin._host, "127.0.0.1")
+        self.assertEqual(analysis_plugin._port, 9120)
+
+        with self.assertRaises(errors.BadConfigObject):
+            nsrlsvr_analysis.NsrlsvrAnalysisArgumentsHelper.ParseOptions(options, None)
+
+
+if __name__ == "__main__":
+    unittest.main()

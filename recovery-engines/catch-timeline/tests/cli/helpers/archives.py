@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+"""Tests for the archives CLI arguments helper."""
+
+import unittest
+
+from plaso.cli import tools
+from plaso.cli.helpers import archives
+from plaso.lib import errors
+
+from tests.cli import test_lib as cli_test_lib
+
+
+class ArchivesArgumentsHelperTest(cli_test_lib.CLIToolTestCase):
+    """Tests for the archives CLI arguments helper."""
+
+    # pylint: disable=no-member,protected-access
+
+    _EXPECTED_OUTPUT = f"""\
+usage: cli_helper.py [--archives TYPES]
+
+Test argument parser.
+
+{cli_test_lib.ARGPARSE_OPTIONS:s}:
+  --archives TYPES  Define a list of archive and storage media image types for
+                    which to process embedded file entries, such as TAR
+                    (archive.tar) or ZIP (archive.zip). This is a comma
+                    separated list where each entry is the name of an archive
+                    type, such as "tar,zip". "all" indicates that all archive
+                    types should be enabled. "none" disables processing file
+                    entries embedded in archives. Use "--archives list" to
+                    list the available archive types. WARNING: this can make
+                    processing significantly slower.
+"""
+
+    def testAddArguments(self):
+        """Tests the AddArguments function."""
+        argument_parser = self._GetTestArgumentParser("cli_helper.py")
+
+        archives.ArchivesArgumentsHelper.AddArguments(argument_parser)
+
+        output = self._RunArgparseFormatHelp(argument_parser)
+        self.assertEqual(output, self._EXPECTED_OUTPUT)
+
+    def testParseOptions(self):
+        """Tests the ParseOptions function."""
+        options = cli_test_lib.TestOptions()
+        options.archives = "tar"
+
+        test_tool = tools.CLITool()
+        archives.ArchivesArgumentsHelper.ParseOptions(options, test_tool)
+
+        self.assertEqual(test_tool._archive_types_string, options.archives)
+
+        with self.assertRaises(errors.BadConfigObject):
+            archives.ArchivesArgumentsHelper.ParseOptions(options, None)
+
+        with self.assertRaises(errors.BadConfigOption):
+            options.archives = "bogus"
+            archives.ArchivesArgumentsHelper.ParseOptions(options, test_tool)
+
+
+if __name__ == "__main__":
+    unittest.main()
