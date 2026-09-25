@@ -1,38 +1,86 @@
-# CATCH-AI: Architecture & Integration Strategy
+# CATCH-AI Architecture
 
 ## Overview
 
-CATCH-AI aims to provide a unified platform for digital forensic evidence recovery. It acts as an orchestration and analytical layer over several specialized third-party tools.
+CATCH-AI is split into two primary application layers:
 
-## Architecture
+1. **Investigator interface** — React, Vite, and TypeScript.
+2. **Forensic processing service** — Python and FastAPI.
 
-The system will use a modular, microservice-inspired architecture where CATCH-AI acts as the central orchestrator:
+The frontend is responsible for investigation workflows, visualization, filtering, and presentation. The backend is responsible for evidence processing, engine execution, persistence, and API responses.
 
-1.  **Core Orchestrator (CATCH-AI Core)**
-    *   Written in Python.
-    *   Provides the unified API and user interface (if applicable).
-    *   Manages task execution and coordinates with external tools.
+## Processing flow
 
-2.  **Execution Wrappers**
-    *   Individual wrappers/adapters for each third-party tool.
-    *   These wrappers will handle the invocation of CLI tools (like `testdisk`, `plaso`, `sleuthkit`) via subprocess calls.
-    *   For Python-native libraries (like `pytsk3`, `ForensicAI`), they will be integrated directly but abstracted behind a standard internal interface.
+```
+Evidence
+  |
+  v
+Recovery job
+  |
+  v
+Engine selection / execution
+  |
+  +--> Filesystem analysis
+  +--> File carving
+  +--> Deep recovery
+  +--> Fragment analysis
+  |
+  v
+Artifacts
+  |
+  v
+Fragments
+  |
+  v
+Evidence-backed relationships
+  |
+  v
+Reconstruction
+  |
+  v
+Validation / integrity
+  |
+  v
+API
+  |
+  v
+Investigator UI
+```
 
-3.  **Data Ingestion & Normalization Layer**
-    *   Responsible for taking the output from disparate tools and normalizing it into a common data schema (e.g., JSON-based timelines or evidence logs).
+## Persistence
 
-4.  **AI Analysis Engine**
-    *   Leverages `ForensicAI` and `deep-recover` to perform automated analysis on the extracted data.
+The current local implementation uses SQLite. Recovery jobs and derived records are persisted so that the interface can display historical processing results.
 
-## Integration Strategy
+Database creation is not the same as database migration. Schema changes must be handled deliberately and must not be solved by deleting an existing evidence database.
 
-Due to licensing constraints (e.g., GPL for TestDisk) and architectural differences, we will adopt a **loose coupling** strategy:
+## Engine registry
 
-*   **Subprocess Execution**: CLI tools will be executed as separate processes. This ensures GPL compliance (as they are not dynamically or statically linked) and prevents a crash in a third-party tool from crashing the CATCH-AI core.
-*   **Standardized Interfaces**: Python wrappers will define a standard interface for operations (e.g., `extract_image`, `recover_files`, `generate_timeline`).
-*   **Artifact Storage**: Tools will output data to intermediate files or a local database, which CATCH-AI will then parse and ingest.
+The backend has an engine registry/adaptor layer. An engine should expose:
 
-## Dependency Management
+- stable identifier;
+- display name;
+- availability;
+- version when known;
+- execution status;
+- input/output information;
+- errors when execution fails.
 
-*   Python dependencies will be managed via `requirements.txt` or `poetry`.
-*   System-level dependencies (like C/C++ libraries for SleuthKit/libewf) will be documented and eventually containerized (Docker) for consistent deployments.
+The registry must not manufacture success when an executable or library is missing.
+
+## API boundary
+
+The frontend should consume API results rather than duplicating forensic calculations. Compatibility fields should be treated as compatibility data when they are not independently measured.
+
+For example, a field that defaults to zero or mirrors an artifact count must not be presented as an independently verified forensic measurement.
+
+## Frontend boundary
+
+The interface should remain data-driven:
+
+- no hardcoded case records;
+- no fictional reports;
+- no invented progress percentages;
+- no fake telemetry;
+- no static success badges for unexecuted operations.
+
+Unavailable backend data should produce an explicit empty or unavailable state.
