@@ -148,7 +148,7 @@ def get_jobs():
             "status": "COMPLETED", 
             "fragments": len(v.get("fragments", [])), 
             "relationships": 0, 
-            "created_at": "2026-09-25T00:00:00Z"
+            "created_at": v.get("created_at")
         })
     return {"jobs": jobs}
 
