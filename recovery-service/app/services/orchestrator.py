@@ -104,9 +104,19 @@ class Orchestrator:
 
         try:
             result = engine_instance.execute(image, **kwargs)
-            status = "SUCCESS"
-            logs = f"Execution completed for {engine_name}"
-            error = None
+            engine_status = result.get("status") if isinstance(result, dict) else None
+            if engine_status in {"FAILED", "ERROR"}:
+                status = "FAILED"
+                error = result.get("error") if isinstance(result, dict) else "Engine reported failure"
+                logs = error or f"{engine_name} reported failure"
+            elif engine_status in {"NOT_SUPPORTED", "NOT_IMPLEMENTED"}:
+                status = "NOT_SUPPORTED"
+                error = result.get("error") if isinstance(result, dict) else f"{engine_name} is not implemented"
+                logs = error
+            else:
+                status = "SUCCESS"
+                logs = f"Execution completed for {engine_name}"
+                error = None
         except Exception as e:
             result = None
             status = "FAILED"

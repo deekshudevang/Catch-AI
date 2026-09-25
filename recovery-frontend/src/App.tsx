@@ -9,6 +9,7 @@ const Dashboard     = lazy(() => import('./pages/Dashboard'));
 const CaseList      = lazy(() => import('./pages/CaseList'));
 const CaseWorkspace = lazy(() => import('./pages/CaseWorkspace'));
 const Recovery      = lazy(() => import('./pages/RecoveryWorkspace'));
+const RecoveredFiles = lazy(() => import('./pages/RecoveredFiles'));
 const Fragments     = lazy(() => import('./pages/FragmentExplorer'));
 const GraphPage     = lazy(() => import('./pages/FragmentGraph'));
 const Validation    = lazy(() => import('./pages/ValidationUI'));
@@ -46,8 +47,12 @@ function App() {
                 <Route path="/cases/:caseId" element={<CaseWorkspace />} />
                 <Route path="/cases/:caseId/*" element={<CaseWorkspace />} />
                 <Route path="/recovery"    element={<Recovery />} />
+                <Route path="/recovery/:recoveryId" element={<Recovery />} />
+                <Route path="/recovery/:recoveryId/files" element={<RecoveredFiles />} />
                 <Route path="/fragments"   element={<Fragments />} />
+                <Route path="/recovery/:recoveryId/fragments" element={<Fragments />} />
                 <Route path="/graph"       element={<GraphPage />} />
+                <Route path="/graph/:recoveryId" element={<GraphPage />} />
                 <Route path="/validation"  element={<Validation />} />
                 <Route path="/engines"     element={<EngineMonitor />} />
                 <Route path="/reports"     element={<Reports />} />

@@ -28,10 +28,11 @@ RECOVERY_RESULTS = {}
 class RecoverRequest(BaseModel):
     image_path: Optional[str] = None
     imagePath: Optional[str] = None
+    target_path: Optional[str] = None
     
     @property
     def get_image_path(self):
-        return self.imagePath or self.image_path
+        return self.imagePath or self.image_path or self.target_path
 
 @app.post("/api/demo/run")
 def run_demo():
@@ -112,23 +113,23 @@ def get_recovery_validation(recovery_id: str):
 
 @app.post("/api/recovery/analyze")
 def analyze(req: RecoverRequest):
-    return {"status": "mock", "message": "use /api/demo/run for hackathon demo"}
+    raise HTTPException(status_code=501, detail="Endpoint not implemented; use /api/recover/scan.")
 
 @app.post("/api/recovery/recover")
 def recover(req: RecoverRequest):
-    return {"status": "mock", "message": "use /api/demo/run for hackathon demo"}
+    raise HTTPException(status_code=501, detail="Endpoint not implemented; use /api/recover/scan.")
 
 @app.post("/api/recovery/fragments/analyze")
 def fragments_analyze():
-    return {"status": "mock", "message": "use /api/demo/run for hackathon demo"}
+    raise HTTPException(status_code=501, detail="Endpoint not implemented; use /api/recover/scan.")
 
 @app.post("/api/recovery/reconstruct")
 def reconstruct():
-    return {"status": "mock", "message": "use /api/demo/run for hackathon demo"}
+    raise HTTPException(status_code=501, detail="Endpoint not implemented; use /api/recover/scan.")
 
 @app.post("/api/recovery/validate")
 def validate():
-    return {"status": "mock", "message": "use /api/demo/run for hackathon demo"}
+    raise HTTPException(status_code=501, detail="Endpoint not implemented; use /api/recover/scan.")
 
 @app.get("/api/recovery/jobs/{job_id}")
 def get_job(job_id: str):
@@ -136,7 +137,9 @@ def get_job(job_id: str):
 
 @app.get("/api/health")
 def health():
-    return {"status": "OK", "engines": {"catch-ai": "OK"}}
+    engines = orchestrator_service.get_engine_health()
+    overall = "OK" if all(v == "READY" for v in engines.values()) else "DEGRADED"
+    return {"status": overall, "engines": engines}
 
 @app.get("/api/recover/jobs")
 def get_jobs():
@@ -148,7 +151,7 @@ def get_jobs():
             "status": "COMPLETED", 
             "fragments": len(v.get("fragments", [])), 
             "relationships": 0, 
-            "created_at": "2026-09-25T00:00:00Z"
+            "created_at": v.get("created_at")
         })
     return {"jobs": jobs}
 
@@ -192,8 +195,8 @@ def recover_scan(req: RecoverRequest):
         "graph": {"nodes": engine_result.get("files_found", 0), "edges": 0},
         "carved_files": carving_engine_result.get("files_found", 0),
         "files": carving_engine_result.get("files", []),
-        "status": "COMPLETED",
-        "engine_logs": orchestrator_result.get("logs", []) + carving_result.get("logs", []),
+        "status": "COMPLETED" if carving_result["status"] == "SUCCESS" else "PARTIAL" if orchestrator_result["status"] == "SUCCESS" else "FAILED",
+        "engine_logs": [orchestrator_result.get("logs"), carving_result.get("logs")],
         "execution_trace": carving_result.get("result", {})
     }
     
