@@ -46,3 +46,18 @@ build/
 .idea/
 *.swp
 *.swo
+
+# Test recovery outputs
+recovery-service/acceptance_carved_output/
+recovery-service/acceptance_deep_recovery_output/
+recovery-service/carved_files/
+recovery-service/deep_recovery_*/
+recovery-service/test_carved_output.*/
+test_carved_output.*/
+test_img_dir/
+
+# Downloaded tools
+recovery-engines/catch-carving-bin/
+testdisk*/
+*.zip
+scratch/
