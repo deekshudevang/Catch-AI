@@ -1,19 +1,32 @@
-def order_fragments(graph) -> dict:
-    # A simple greedy approach for deterministic reconstruction in the hackathon prototype.
-    # Start with the node that has the lowest offset or a known magic byte.
-    nodes = list(graph.nodes.values())
-    
-    if not nodes:
-        return {"selected_path": [], "ordering_score": 0.0, "reasons": ["No fragments"]}
 
-    # Sort by offset as a fallback, but we'll try to build a chain based on adjacency scores
-    nodes.sort(key=lambda x: x["offset"])
+from typing import List
+from .models import FragmentGraphResult
+
+def order_fragments(graph: FragmentGraphResult) -> List[str]:
+    # Directed graph traversal
+    nodes = {n.id: n for n in graph.nodes}
+    edges = graph.edges
     
-    selected_path = [n["id"] for n in nodes]
-    
-    return {
-        "selected_path": selected_path,
-        "alternative_paths": [],
-        "ordering_score": 0.85,
-        "reasons": ["sorted by physical offset", "used greedy relationship edge matching"]
-    }
+    in_degree = {n: 0 for n in nodes}
+    out_edges = {n: [] for n in nodes}
+    for e in edges:
+        in_degree[e.target] += 1
+        out_edges[e.source].append(e)
+        
+    start_nodes = [n for n, deg in in_degree.items() if deg == 0]
+    if not start_nodes:
+        start_nodes = list(nodes.keys())
+        
+    ordered = []
+    current = start_nodes[0]
+    while current:
+        ordered.append(current)
+        outs = out_edges[current]
+        if not outs:
+            break
+        outs.sort(key=lambda e: e.weight, reverse=True)
+        current = outs[0].target
+        if current in ordered: # loop prevention
+            break
+            
+    return ordered
