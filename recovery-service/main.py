@@ -137,7 +137,9 @@ def get_job(job_id: str):
 
 @app.get("/api/health")
 def health():
-    return {"status": "OK", "engines": {"catch-ai": "OK"}}
+    engines = orchestrator_service.get_engine_health()
+    overall = "OK" if all(v == "READY" for v in engines.values()) else "DEGRADED"
+    return {"status": overall, "engines": engines}
 
 @app.get("/api/recover/jobs")
 def get_jobs():
