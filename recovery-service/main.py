@@ -28,10 +28,11 @@ RECOVERY_RESULTS = {}
 class RecoverRequest(BaseModel):
     image_path: Optional[str] = None
     imagePath: Optional[str] = None
+    target_path: Optional[str] = None
     
     @property
     def get_image_path(self):
-        return self.imagePath or self.image_path
+        return self.imagePath or self.image_path or self.target_path
 
 @app.post("/api/demo/run")
 def run_demo():
