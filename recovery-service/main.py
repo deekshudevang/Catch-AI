@@ -112,7 +112,7 @@ def get_recovery_validation(recovery_id: str):
 
 @app.post("/api/recovery/analyze")
 def analyze(req: RecoverRequest):
-    return {"status": "mock", "message": "use /api/demo/run for hackathon demo"}
+    raise HTTPException(status_code=501, detail="Endpoint not implemented; use /api/recover/scan.")
 
 @app.post("/api/recovery/recover")
 def recover(req: RecoverRequest):
