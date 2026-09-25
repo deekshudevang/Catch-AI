@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { SectionCard } from '../components/common';
 import type { GraphData, ReconstructionPath, GraphNode, GraphEdge } from '../api/graph';
+import { graphApi } from '../api/graph';
 import { GitMerge, ZoomIn, ZoomOut, Maximize, RotateCcw } from 'lucide-react';
 import ForceGraph2D from 'react-force-graph-2d';
 import type { ForceGraphMethods } from 'react-force-graph-2d';
@@ -19,24 +20,17 @@ export default function FragmentGraph() {
   useEffect(() => {
     if (!recoveryId) return;
     
-    // Simulate API fetch
-    setTimeout(() => {
-      setGraphData({
-        nodes: [
-          { id: 'FRAG-001', fragment_id: 'FRAG-001', offset: 0, length: 4096, type: 'PDF', entropy: 0.9, source_engine: 'Carver' },
-          { id: 'FRAG-009', fragment_id: 'FRAG-009', offset: 8192, length: 4096, type: 'UNKNOWN', entropy: 0.95, source_engine: 'Carver' },
-          { id: 'FRAG-013', fragment_id: 'FRAG-013', offset: 16384, length: 4096, type: 'UNKNOWN', entropy: 0.93, source_engine: 'Carver' },
-        ],
-        edges: [
-          { id: 'E1', source: 'FRAG-001', target: 'FRAG-009', score: 0.94, reasons: ['Compatible file type', 'Consistent physical offset'], is_selected_path: true },
-          { id: 'E2', source: 'FRAG-009', target: 'FRAG-013', score: 0.88, reasons: ['Entropy match'], is_selected_path: true }
-        ]
-      });
-      setPaths([
-         { path_id: 'PATH-1', score: 0.91, fragment_count: 3, fragments: ['FRAG-001', 'FRAG-009', 'FRAG-013'], reasons: ['Contiguous logical flow'] }
-      ]);
-      setLoading(false);
-    }, 800);
+    setLoading(true);
+    Promise.all([
+      graphApi.getGraph(undefined, undefined, recoveryId),
+      graphApi.getProbablePaths(recoveryId)
+    ])
+      .then(([graph, probablePaths]) => {
+        setGraphData(graph);
+        setPaths(probablePaths);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, [recoveryId]);
 
   const handleNodeClick = useCallback((node: any) => {

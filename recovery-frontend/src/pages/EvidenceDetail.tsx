@@ -18,26 +18,12 @@ export default function EvidenceDetail() {
   useEffect(() => {
     if (!evidenceId) return;
     
-    // In real app we would use Promise.all and handle errors appropriately
-    evidenceApi.getEvidenceById(evidenceId).then(setEvidence).catch(() => {});
-    evidenceApi.getEvidencePartitions(evidenceId).then(setPartitions).catch(() => {});
-    evidenceApi.getEvidenceAnalysis(evidenceId).then(setAnalysis).catch(() => {});
-    evidenceApi.getEvidenceRecoveries(evidenceId).then(setRecoveries).catch(() => {});
-    
-    // Simulate loading for now since mock API throws on getEvidenceById
-    setTimeout(() => {
-      setEvidence({
-        id: evidenceId,
-        case_id: 'CASE-2026-001',
-        filename: 'disk01.E01',
-        format: 'EWF',
-        size_bytes: 256000000000,
-        sha256: 'a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3',
-        status: 'READY',
-        added_at: new Date().toISOString()
-      });
-      setLoading(false);
-    }, 500);
+    Promise.all([
+      evidenceApi.getEvidenceById(evidenceId).then(setEvidence).catch(() => {}),
+      evidenceApi.getEvidencePartitions(evidenceId).then(setPartitions).catch(() => {}),
+      evidenceApi.getEvidenceAnalysis(evidenceId).then(setAnalysis).catch(() => {}),
+      evidenceApi.getEvidenceRecoveries(evidenceId).then(setRecoveries).catch(() => {})
+    ]).finally(() => setLoading(false));
 
   }, [evidenceId]);
 

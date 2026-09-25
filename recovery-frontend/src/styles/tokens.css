@@ -5,7 +5,7 @@
 
 :root {
   /* --- Backgrounds --- */
-  --bg:          #080A0F;
+  --bg:          #000000;
   --surface:     #0D1117;
   --surface-2:   #111720;
   --surface-3:   #161E2A;
@@ -15,14 +15,14 @@
   --border-2:    #2A3A50;
 
   /* --- Text --- */
-  --text:        #E6EDF3;
-  --text-2:      #8B98A8;
-  --text-3:      #5F6B78;
+  --text:        #FFFFFF;
+  --text-2:      #E6E6E6;
+  --text-3:      #949494;
 
-  /* --- Primary Accent: Cyan --- */
-  --cyan:        #22D3EE;
-  --cyan-dim:    rgba(34, 211, 238, 0.12);
-  --cyan-border: rgba(34, 211, 238, 0.3);
+  /* --- Primary Accent: Forensic Red --- */
+  --cyan:        #C81B1C;
+  --cyan-dim:    rgba(200, 27, 28, 0.12);
+  --cyan-border: rgba(200, 27, 28, 0.3);
 
   /* --- Success: Green --- */
   --green:       #34D399;
@@ -35,9 +35,9 @@
   --amber-border:rgba(251, 191, 36, 0.3);
 
   /* --- Critical: Red --- */
-  --red:         #F87171;
-  --red-dim:     rgba(248, 113, 113, 0.12);
-  --red-border:  rgba(248, 113, 113, 0.3);
+  --red:         #8F1213;
+  --red-dim:     rgba(143, 18, 19, 0.12);
+  --red-border:  rgba(143, 18, 19, 0.3);
 
   /* --- Purple (secondary accent) --- */
   --purple:      #A78BFA;
@@ -64,11 +64,11 @@
   --sp-10: 40px;
   --sp-12: 48px;
 
-  /* --- Radius --- */
-  --r-sm:  4px;
-  --r-md:  6px;
-  --r-lg:  8px;
-  --r-xl:  12px;
+  /* --- Radius (SHARP) --- */
+  --r-sm:  0px;
+  --r-md:  0px;
+  --r-lg:  0px;
+  --r-xl:  0px;
 
   /* --- Shadows --- */
   --shadow-sm:   0 1px 3px rgba(0,0,0,0.4);
@@ -83,6 +83,6 @@
   /* --- Layout --- */
   --sidebar-w:     240px;
   --topbar-h:      56px;
-  --font-sans:     'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans:     'Space Grotesk', system-ui, -apple-system, sans-serif;
   --font-mono:     'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 }

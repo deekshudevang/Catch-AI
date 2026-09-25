@@ -11,17 +11,9 @@ export default function RecoveredFiles() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    filesApi.getFiles(recoveryId).then(setFiles).catch(() => {});
-    
-    // Mock data for UI
-    setTimeout(() => {
-      setFiles([
-        { id: '1', recovery_id: recoveryId || 'R-001', filename: 'invoice_2026.pdf', detected_type: 'PDF', size_bytes: 45000, recovery_method: 'FS_UNDELETE', source_engine: 'CATCH FS', fragments_count: 1, integrity_score: 1.0, confidence_score: 1.0, status: 'RECOVERED' },
-        { id: '2', recovery_id: recoveryId || 'R-001', filename: 'vacation.jpg', detected_type: 'JPEG', size_bytes: 1250000, recovery_method: 'CARVING', source_engine: 'CATCH Carve', fragments_count: 3, integrity_score: 0.8, confidence_score: 0.9, status: 'PARTIAL' },
-        { id: '3', recovery_id: recoveryId || 'R-001', filename: 'budget.xlsx', detected_type: 'ZIP', size_bytes: 25000, recovery_method: 'FS_UNDELETE', source_engine: 'CATCH FS', fragments_count: 1, integrity_score: 1.0, confidence_score: 1.0, status: 'RECOVERED' },
-      ]);
+    filesApi.getFiles(recoveryId).then(setFiles).catch(() => {}).finally(() => {
       setLoading(false);
-    }, 500);
+    });
   }, [recoveryId]);
 
   return (

@@ -11,15 +11,11 @@ export default function FragmentExplorer() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fragmentsApi.getFragments(recoveryId).then(res => setFragments(res.data)).catch(() => {});
-    
-    setTimeout(() => {
-      setFragments([
-        { id: 'FRAG-001', case_id: 'C-01', evidence_id: 'E-01', recovery_id: 'R-01', offset: 1048576, physical_offset: 1048576, length: 4096, file_type: 'PDF', entropy: 0.94, source_engine: 'CATCH Carve' },
-        { id: 'FRAG-002', case_id: 'C-01', evidence_id: 'E-01', recovery_id: 'R-01', offset: 1052672, physical_offset: 1052672, length: 4096, file_type: 'UNKNOWN', entropy: 0.98, source_engine: 'CATCH Carve' },
-      ]);
-      setLoading(false);
-    }, 500);
+    setLoading(true);
+    fragmentsApi.getFragments(recoveryId)
+      .then(res => setFragments(res.data))
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, [recoveryId]);
 
   return (

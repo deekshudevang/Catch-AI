@@ -15,36 +15,12 @@ export default function RecoveryWorkspace() {
   useEffect(() => {
     if (!recoveryId) return;
     
-    recoveryApi.getRecoveryJob(recoveryId).then(setJob).catch(() => {});
-    recoveryApi.getEngineExecutions(recoveryId).then(setEngines).catch(() => {});
-
-
-    // Mock data for UI development since real backend isn't returning data yet
-    setTimeout(() => {
-      setJob({
-        id: recoveryId,
-        evidence_id: 'EVID-001',
-        case_id: 'CASE-2026-001',
-        status: 'COMPLETED',
-        started_at: new Date().toISOString(),
-        duration_ms: 450000,
-        files_found: 12543,
-        deleted_files: 432,
-        recoverable: 350,
-        recovered: 345,
-        partial: 5,
-        fragments: 120500,
-        reconstructions: 42,
-        validation_failures: 2
-      });
-      
-      setEngines([
-        { id: '1', recovery_id: recoveryId, engine: 'CATCH Filesystem Analysis', operation: 'Analyze', status: 'USED', started_at: new Date().toISOString() },
-        { id: '2', recovery_id: recoveryId, engine: 'CATCH Filesystem Recovery', operation: 'Recover', status: 'USED', started_at: new Date().toISOString() },
-        { id: '3', recovery_id: recoveryId, engine: 'CATCH Carving', operation: 'Carve', status: 'NOT_REQUIRED', started_at: new Date().toISOString() }
-      ]);
+    Promise.all([
+      recoveryApi.getRecoveryJob(recoveryId).then(setJob).catch(() => {}),
+      recoveryApi.getEngineExecutions(recoveryId).then(setEngines).catch(() => {})
+    ]).finally(() => {
       setLoading(false);
-    }, 500);
+    });
 
   }, [recoveryId]);
 

@@ -194,22 +194,30 @@ export default function Dashboard() {
         {/* Right Column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-6)' }}>
           <SectionCard title="System Alerts">
-            <div style={{ padding: 'var(--sp-4)', display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
-               <div style={{ display: 'flex', gap: 'var(--sp-3)', padding: 'var(--sp-3)', background: 'var(--amber-dim)', border: '1px solid var(--amber-border)', borderRadius: 'var(--r-md)' }}>
-                 <AlertTriangle size={16} color="var(--amber)" style={{ marginTop: '2px' }} />
-                 <div>
-                   <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text)' }}>High entropy detected in fragmented cluster C-492.</p>
-                   <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-3)', marginTop: '4px' }}>10 mins ago</p>
-                 </div>
-               </div>
-               
-               <div style={{ display: 'flex', gap: 'var(--sp-3)', padding: 'var(--sp-3)', background: 'var(--cyan-dim)', border: '1px solid var(--cyan-border)', borderRadius: 'var(--r-md)' }}>
-                 <Activity size={16} color="var(--cyan)" style={{ marginTop: '2px' }} />
-                 <div>
-                   <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text)' }}>DeepRecover model loaded successfully. GPU acceleration active.</p>
-                   <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-3)', marginTop: '4px' }}>2 hours ago</p>
-                 </div>
-               </div>
+            <div style={{ padding: 'var(--sp-4)' }}>
+              <EmptyState 
+                title="NOT_AVAILABLE" 
+                description="System alerts telemetry is not currently provided by the backend API." 
+                icon={<AlertTriangle size={24} />} 
+              />
+            </div>
+          </SectionCard>
+
+          <SectionCard title="CATCH-AI Forensic Workflow">
+            <div style={{ padding: 'var(--sp-4)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-2)' }}>
+                {[
+                  "Evidence", "Engine Selection (raw/carved)", "Recovery Pipeline", 
+                  "Fragments", "Relationships", "Graph", "Reconstruction (Phase 4)", 
+                  "Validation", "Integrity", "Classification", "Priority", 
+                  "Timeline", "Case Intelligence"
+                ].map((step, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)' }}>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'var(--blue-dim)', color: 'var(--blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--text-xs)', fontWeight: 'bold' }}>{idx + 1}</div>
+                    <div style={{ color: 'var(--text-2)', fontSize: 'var(--text-sm)', flex: 1 }}>{step}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </SectionCard>
 
