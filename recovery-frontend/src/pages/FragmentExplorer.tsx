@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { PageHeader, SectionCard, EmptyState } from '../components/common';
-import { fragmentsApi, type Fragment } from '../api/fragments';
+import { fragmentsApi } from '../api/fragments';
+import type { Fragment } from '../api/fragments';
 import { Search } from 'lucide-react';
 
 export default function FragmentExplorer() {

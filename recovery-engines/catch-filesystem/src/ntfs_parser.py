@@ -7,6 +7,13 @@ import pytsk3
 import sys
 from typing import Optional, Tuple
 
+def safe_print(msg: str):
+    try:
+        print(msg)
+    except UnicodeEncodeError:
+        print(msg.encode(sys.stdout.encoding or 'ascii', 'replace').decode(sys.stdout.encoding or 'ascii'))
+
+
 
 class NTFSParser:
     """
@@ -35,13 +42,13 @@ class NTFSParser:
         try:
             # Mở disk image
             self.img_info = pytsk3.Img_Info(self.image_path)
-            print(f"[+] Đã mở disk image: {self.image_path}")
-            print(f"[+] Image size: {self.img_info.get_size()} bytes")
+            safe_print(f"[+] Đã mở disk image: {self.image_path}")
+            safe_print(f"[+] Image size: {self.img_info.get_size()} bytes")
             
             return True
             
         except Exception as e:
-            print(f"[!] Lỗi khi mở disk image: {e}")
+            safe_print(f"[!] Lỗi khi mở disk image: {e}")
             return False
     
     def detect_partition_offset(self) -> bool:
@@ -58,20 +65,20 @@ class NTFSParser:
             # Duyệt qua các partition
             for partition in volume:
                 # Tìm partition NTFS
-                if partition.desc.decode('utf-8').strip().upper() in ['NTFS', 'NTFS / EXFAT']:
+                if 'NTFS' in partition.desc.decode('utf-8').strip().upper():
                     self.partition_offset = partition.start * 512  # 512 bytes per sector
-                    print(f"[+] Đã phát hiện NTFS partition tại offset: {self.partition_offset}")
-                    print(f"[+] Partition description: {partition.desc.decode('utf-8')}")
-                    print(f"[+] Partition size: {partition.len * 512} bytes")
+                    safe_print(f"[+] Đã phát hiện NTFS partition tại offset: {self.partition_offset}")
+                    safe_print(f"[+] Partition description: {partition.desc.decode('utf-8')}")
+                    safe_print(f"[+] Partition size: {partition.len * 512} bytes")
                     return True
                     
-            print("[!] Không tìm thấy NTFS partition")
+            safe_print("[!] Không tìm thấy NTFS partition")
             return False
             
         except Exception as e:
             # Nếu không có partition table, giả sử toàn bộ image là NTFS
-            print(f"[*] Không phát hiện được partition table: {e}")
-            print("[*] Giả sử toàn bộ image là NTFS filesystem")
+            safe_print(f"[*] Không phát hiện được partition table: {e}")
+            safe_print("[*] Giả sử toàn bộ image là NTFS filesystem")
             self.partition_offset = 0
             return True
     
@@ -89,17 +96,17 @@ class NTFSParser:
             # Kiểm tra xem có phải NTFS không
             fs_type = self.fs_info.info.ftype
             if fs_type != pytsk3.TSK_FS_TYPE_NTFS:
-                print(f"[!] Filesystem không phải NTFS: {fs_type}")
+                safe_print(f"[!] Filesystem không phải NTFS: {fs_type}")
                 return False
             
-            print(f"[+] Đã mở NTFS filesystem")
-            print(f"[+] Block size: {self.fs_info.info.block_size} bytes")
-            print(f"[+] Block count: {self.fs_info.info.block_count}")
+            safe_print(f"[+] Đã mở NTFS filesystem")
+            safe_print(f"[+] Block size: {self.fs_info.info.block_size} bytes")
+            safe_print(f"[+] Block count: {self.fs_info.info.block_count}")
             
             return True
             
         except Exception as e:
-            print(f"[!] Lỗi khi mở filesystem: {e}")
+            safe_print(f"[!] Lỗi khi mở filesystem: {e}")
             return False
     
     def get_filesystem(self) -> Optional[pytsk3.FS_Info]:
@@ -120,7 +127,7 @@ class NTFSParser:
         """
         try:
             if self.fs_info is None:
-                print("[!] Filesystem chưa được mở")
+                safe_print("[!] Filesystem chưa được mở")
                 return None
                 
             # Mở root directory (inode 5 trong NTFS)
@@ -128,7 +135,7 @@ class NTFSParser:
             return root_dir
             
         except Exception as e:
-            print(f"[!] Lỗi khi mở root directory: {e}")
+            safe_print(f"[!] Lỗi khi mở root directory: {e}")
             return None
     
     def initialize(self) -> bool:
@@ -147,7 +154,7 @@ class NTFSParser:
         if not self.open_filesystem():
             return False
             
-        print("[+] NTFS Parser đã được khởi tạo thành công")
+        safe_print("[+] NTFS Parser đã được khởi tạo thành công")
         return True
     
     def get_file_by_inode(self, inode: int) -> Optional[pytsk3.File]:
@@ -168,8 +175,68 @@ class NTFSParser:
             return file_obj
             
         except Exception as e:
-            print(f"[!] Lỗi khi mở file inode {inode}: {e}")
+            safe_print(f"[!] Lỗi khi mở file inode {inode}: {e}")
             return None
+            
+    def get_file_list(self, directory=None, current_path="/") -> list:
+        """
+        Lấy danh sách các file trong filesystem
+        """
+        if directory is None:
+            directory = self.get_root_directory()
+            if not directory:
+                return []
+                
+        files = []
+        try:
+            for entry in directory:
+                if not entry.info.name or not entry.info.name.name:
+                    continue
+                name = entry.info.name.name.decode('utf-8', errors='replace')
+                if name in ['.', '..']:
+                    continue
+                    
+                full_path = f"{current_path}{name}"
+                is_dir = entry.info.meta and entry.info.meta.type == pytsk3.TSK_FS_META_TYPE_DIR
+                
+                files.append({
+                    'name': name,
+                    'path': full_path,
+                    'size': entry.info.meta.size if entry.info.meta else 0,
+                    'inode': entry.info.meta.addr if entry.info.meta else 0,
+                    'is_dir': is_dir
+                })
+                
+                if is_dir:
+                    try:
+                        sub_dir = entry.as_directory()
+                        files.extend(self.get_file_list(sub_dir, f"{full_path}/"))
+                    except IOError:
+                        pass
+        except Exception as e:
+            safe_print(f"[!] Lỗi khi đọc directory: {e}")
+            
+        return files
+        
+    def read_file_content(self, filename: str) -> bytes:
+        """
+        Đọc nội dung file theo tên
+        """
+        files = self.get_file_list()
+        for f in files:
+            if f['name'] == filename:
+                inode = f['inode']
+                file_obj = self.get_file_by_inode(inode)
+                if not file_obj or not file_obj.info.meta:
+                    return b""
+                if file_obj.info.meta.size == 0:
+                    return b""
+                try:
+                    return file_obj.read_random(0, file_obj.info.meta.size)
+                except Exception as e:
+                    safe_print(f"[!] Lỗi khi đọc file content: {e}")
+                    return b""
+        return b""
     
     def close(self):
         """
@@ -177,5 +244,5 @@ class NTFSParser:
         """
         self.fs_info = None
         self.img_info = None
-        print("[+] Đã đóng NTFS Parser")
+        safe_print("[+] Đã đóng NTFS Parser")
 

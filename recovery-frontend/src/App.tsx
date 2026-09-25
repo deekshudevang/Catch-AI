@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Sidebar, Topbar } from './components/Shell';
 import { LoadingState } from './components/common';
@@ -8,15 +8,12 @@ import './index.css';
 const Dashboard     = lazy(() => import('./pages/Dashboard'));
 const CaseList      = lazy(() => import('./pages/CaseList'));
 const CaseWorkspace = lazy(() => import('./pages/CaseWorkspace'));
-const Recovery      = lazy(() => import('./pages/Recovery'));
-const Fragments     = lazy(() => import('./pages/Fragments'));
+const Recovery      = lazy(() => import('./pages/RecoveryWorkspace'));
+const Fragments     = lazy(() => import('./pages/FragmentExplorer'));
 const GraphPage     = lazy(() => import('./pages/FragmentGraph'));
 const Validation    = lazy(() => import('./pages/ValidationUI'));
 const EngineMonitor = lazy(() => import('./pages/RecoveryEngines'));
 const Reports       = lazy(() => import('./pages/Reports'));
-const Timeline      = lazy(() => import('./pages/Timeline'));
-const AuditLog      = lazy(() => import('./pages/AuditLog'));
-const SettingsPage  = lazy(() => import('./pages/SettingsPage'));
 
 // ─── Page fallback ────────────────────────────────────────────────────────────
 function PagePlaceholder({ name }: { name: string }) {
@@ -54,9 +51,9 @@ function App() {
                 <Route path="/validation"  element={<Validation />} />
                 <Route path="/engines"     element={<EngineMonitor />} />
                 <Route path="/reports"     element={<Reports />} />
-                <Route path="/timeline"    element={<Timeline />} />
-                <Route path="/audit"       element={<AuditLog />} />
-                <Route path="/settings"    element={<SettingsPage />} />
+                <Route path="/timeline"    element={<PagePlaceholder name="Timeline" />} />
+                <Route path="/audit"       element={<PagePlaceholder name="AuditLog" />} />
+                <Route path="/settings"    element={<PagePlaceholder name="SettingsPage" />} />
                 {/* legacy paths */}
                 <Route path="/recovery-engines" element={<Navigate to="/engines" replace />} />
                 <Route path="*"            element={<Navigate to="/dashboard" replace />} />

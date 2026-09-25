@@ -13,6 +13,8 @@ The latest graph is cached in memory and served by GET /api/orchestrate/graph.
 
 import os
 import uuid
+import time
+from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional
 
 from engines.registry import CATCH_ENGINE_REGISTRY
@@ -96,22 +98,64 @@ class Orchestrator:
 
         engine_cls = self.registry[engine_name]
         engine_instance = engine_cls()
+        execution_id = str(uuid.uuid4())
+        started_at = datetime.now(timezone.utc)
+        t0 = time.time()
 
         try:
             result = engine_instance.execute(image, **kwargs)
             status = "SUCCESS"
             logs = f"Execution completed for {engine_name}"
+            error = None
         except Exception as e:
             result = None
             status = "FAILED"
             logs = str(e)
+            error = str(e)
+
+        completed_at = datetime.now(timezone.utc)
+        duration_ms = int((time.time() - t0) * 1000)
+
+        # Persist execution log
+        try:
+            from app.database import SessionLocal
+            from app.models import ExecutionLog
+            db = SessionLocal()
+            # Strip large file lists from the persisted result to keep DB small
+            persisted_result = None
+            if result and isinstance(result, dict):
+                persisted_result = {k: v for k, v in result.items() if k != "files"}
+                persisted_result["files_count"] = len(result.get("files", []))
+            log_entry = ExecutionLog(
+                execution_id=execution_id,
+                engine=engine_name,
+                repository=getattr(engine_instance, "upstream_component", None),
+                operation="execute",
+                input_reference=str(image) if image else None,
+                started_at=started_at,
+                completed_at=completed_at,
+                status=status,
+                error=error,
+                duration_ms=duration_ms,
+                result=persisted_result,
+                logs=logs,
+            )
+            db.add(log_entry)
+            db.commit()
+            db.close()
+        except Exception:
+            pass  # Don't fail the engine call if logging fails
 
         return {
-            "execution_id": str(uuid.uuid4()),
+            "execution_id": execution_id,
             "engine": engine_name,
             "status": status,
             "result": result,
             "logs": logs,
+            "started_at": started_at.isoformat(),
+            "completed_at": completed_at.isoformat(),
+            "duration_ms": duration_ms,
+            "error": error,
         }
 
     def get_registered_engines(self) -> List[str]:

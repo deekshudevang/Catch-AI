@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { PageHeader, SectionCard, StatusBadge, EmptyState } from '../components/common';
-import { filesApi, type RecoveredFile } from '../api/files';
+import { filesApi } from '../api/files';
+import type { RecoveredFile } from '../api/files';
 import { Search } from 'lucide-react';
 
 export default function RecoveredFiles() {

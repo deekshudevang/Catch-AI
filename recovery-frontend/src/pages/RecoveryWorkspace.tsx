@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { PageHeader, SectionCard, StatusBadge, EmptyState } from '../components/common';
-import { recoveryApi, type RecoveryJob, type EngineExecution } from '../api/recovery';
+import { recoveryApi } from '../api/recovery';
+import type { RecoveryJob, EngineExecution } from '../api/recovery';
 import { Activity, Server, FileText, Database, GitMerge } from 'lucide-react';
 
 export default function RecoveryWorkspace() {

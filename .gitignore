@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Databases (local dev only — production uses env-configured DB)
+*.db
+*.sqlite
+*.sqlite3
+
+# Evidence images — large binary test fixtures, not source
+test-evidence.img
+*.img
+*.E01
+*.raw
+
+# Generated / recovered output (not source)
+evidence/recovered/
+scratch/out/
+scratch/original.pdf
+scratch/temp_input.bin
+scratch/trial1.bin
+scratch/test_catchai.py
+
+# System / tool artifacts
+diskpart.txt
+*.log
+
+# Node.js
+node_modules/
+dist/
+build/
+.cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

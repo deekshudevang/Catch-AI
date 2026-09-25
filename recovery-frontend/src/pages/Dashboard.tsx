@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Play, HardDrive, Server, Database, Clock, RefreshCw, AlertTriangle, FileSearch, CheckCircle, Activity } from 'lucide-react';
-import { backendApi, recoveryApi, RecoveryJob, HealthResponse } from '../api/client';
+import { useEffect, useState } from 'react';
+import { Play, HardDrive, Server, Database, RefreshCw, AlertTriangle, Activity } from 'lucide-react';
+import { backendApi } from '../api/client';
+import type { RecoveryJob, HealthResponse } from '../api/client';
 import { PageHeader, SectionCard, StatusBadge, StatusDot, ErrorState, LoadingState, EmptyState } from '../components/common';
 import './Dashboard.css';
 
@@ -19,8 +20,8 @@ export default function Dashboard() {
       setError(null);
       // Fetch data in parallel
       const [healthData, jobsData] = await Promise.all([
-        backendApi.health().catch(e => null),
-        backendApi.jobs().catch(e => ({ jobs: [] }))
+        backendApi.health().catch(_ => null),
+        backendApi.jobs().catch(_ => ({ jobs: [] }))
       ]);
       if (healthData) setHealth(healthData);
       if (jobsData) setJobs(jobsData.jobs || []);

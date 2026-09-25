@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { PageHeader, SectionCard, StatusBadge, EmptyState } from '../components/common';
-import { evidenceApi, Evidence, Partition, FilesystemInfo, EngineAnalysis, EvidenceRecoveryJob } from '../api/evidence';
+import { evidenceApi } from '../api/evidence';
+import type { Evidence, Partition, EngineAnalysis, EvidenceRecoveryJob } from '../api/evidence';
 import { Activity, HardDrive, Database, Hash, FileCode, PlayCircle } from 'lucide-react';
 
 export default function EvidenceDetail() {
   const { evidenceId } = useParams<{ evidenceId: string }>();
   const [evidence, setEvidence] = useState<Evidence | null>(null);
   const [partitions, setPartitions] = useState<Partition[]>([]);
-  const [filesystems, setFilesystems] = useState<FilesystemInfo[]>([]);
+
   const [analysis, setAnalysis] = useState<EngineAnalysis[]>([]);
   const [recoveries, setRecoveries] = useState<EvidenceRecoveryJob[]>([]);
   
@@ -20,7 +21,6 @@ export default function EvidenceDetail() {
     // In real app we would use Promise.all and handle errors appropriately
     evidenceApi.getEvidenceById(evidenceId).then(setEvidence).catch(() => {});
     evidenceApi.getEvidencePartitions(evidenceId).then(setPartitions).catch(() => {});
-    evidenceApi.getEvidenceFilesystems(evidenceId).then(setFilesystems).catch(() => {});
     evidenceApi.getEvidenceAnalysis(evidenceId).then(setAnalysis).catch(() => {});
     evidenceApi.getEvidenceRecoveries(evidenceId).then(setRecoveries).catch(() => {});
     
@@ -56,7 +56,7 @@ export default function EvidenceDetail() {
       <PageHeader
         title={evidence.filename}
         subtitle={`Evidence ID: ${evidence.id}`}
-        action={
+        actions={
           <div className="flex gap-2">
             <button className="btn btn-secondary">Analyze</button>
             <button className="btn btn-primary"><PlayCircle size={16} className="mr-2" /> Start Recovery</button>

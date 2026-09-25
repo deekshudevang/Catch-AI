@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
-  Activity, LayoutDashboard, HardDrive, Database,
-  Share2, ShieldCheck, FileText, Clock,
-  BarChart2, Settings, AlertCircle, ChevronRight,
-  Cpu, FolderOpen, Files, GitMerge, List,
+  Activity, LayoutDashboard,
+  Share2, ShieldCheck, Clock,
+  BarChart2, Settings, ChevronRight,
+  Cpu, GitMerge, List,
 } from 'lucide-react';
-import { recoveryApi, backendApi, type HealthResponse } from '../api/client';
-import { StatusDot, type StatusLevel } from './common';
+import { recoveryApi, backendApi } from '../api/client';
+import type { HealthResponse } from '../api/client';
+import { StatusDot } from './common';
+import type { StatusLevel } from './common';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

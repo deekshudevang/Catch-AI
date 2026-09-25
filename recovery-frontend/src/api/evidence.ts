@@ -46,7 +46,7 @@ export interface EvidenceRecoveryJob {
   fragments_count: number;
 }
 
-import { apiFetch, BACKEND_URL, RECOVERY_URL } from './client';
+import { apiFetch, BACKEND_URL } from './client';
 
 // Mocks or real endpoints - we are implementing real signatures
 export const evidenceApi = {

@@ -17,7 +17,7 @@ const RecoveryEngines = () => {
       <h1 className="text-2xl font-bold mb-6">CATCH-AI FORENSIC ENGINE MONITOR</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data.engines.map((engine: any) => (
+        {data.engines?.map((engine: any) => (
           <div key={engine.id} className="border border-gray-200 rounded p-4 shadow-sm bg-white">
             <h2 className="text-xl font-bold">{engine.name}</h2>
             <p className="text-sm text-gray-500 mb-4">Repository: {engine.repository}</p>

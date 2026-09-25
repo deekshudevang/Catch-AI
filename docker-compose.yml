@@ -27,6 +27,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - ./recovery-service:/app
+      - ./recovery-engines:/recovery-engines
+      - ./evidence:/evidence
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 

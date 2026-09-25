@@ -10,7 +10,7 @@
  */
 
 export const RECOVERY_URL = import.meta.env.VITE_RECOVERY_API ?? 'http://localhost:8000';
-export const BACKEND_URL  = import.meta.env.VITE_BACKEND_API  ?? 'http://localhost:5000';
+export const BACKEND_URL  = import.meta.env.VITE_BACKEND_API  ?? 'http://localhost:8000';
 
 // ─── Shared fetch helper ──────────────────────────────────────────────────────
 

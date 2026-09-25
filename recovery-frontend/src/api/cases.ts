@@ -118,7 +118,7 @@ export interface CasesApi {
   getCaseAudit(caseId: string): Promise<CaseAudit[]>;
 }
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_API ?? 'http://localhost:5000';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_API ?? 'http://localhost:8000';
 
 async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, init);

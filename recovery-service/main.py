@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from typing import Dict, Any, Optional
 
 from app.services.pipeline_service import run_deterministic_pipeline
-
+from app.services.orchestrator import orchestrator_service
 # Create tables on startup
 Base.metadata.create_all(bind=db_engine)
 
@@ -26,7 +26,12 @@ app.add_middleware(
 RECOVERY_RESULTS = {}
 
 class RecoverRequest(BaseModel):
-    image_path: str
+    image_path: Optional[str] = None
+    imagePath: Optional[str] = None
+    
+    @property
+    def get_image_path(self):
+        return self.imagePath or self.image_path
 
 @app.post("/api/demo/run")
 def run_demo():
@@ -128,4 +133,71 @@ def validate():
 @app.get("/api/recovery/jobs/{job_id}")
 def get_job(job_id: str):
     return {"job_id": job_id, "status": "COMPLETED"}
+
+@app.get("/api/health")
+def health():
+    return {"status": "OK", "engines": {"catch-ai": "OK"}}
+
+@app.get("/api/recover/jobs")
+def get_jobs():
+    jobs = []
+    for k, v in RECOVERY_RESULTS.items():
+        jobs.append({
+            "id": k, 
+            "image_path": "demo_image.bin",
+            "status": "COMPLETED", 
+            "fragments": len(v.get("fragments", [])), 
+            "relationships": 0, 
+            "created_at": "2026-09-25T00:00:00Z"
+        })
+    return {"jobs": jobs}
+
+@app.post("/api/recover/scan")
+def recover_scan(req: RecoverRequest):
+    img_path = req.get_image_path
+    
+    if not img_path:
+        raise HTTPException(status_code=400, detail="imagePath is required")
+    
+    if not os.path.exists(img_path):
+        # Resolve relative paths against REPO_ROOT env var or the service's parent directory
+        repo_root = os.environ.get(
+            "REPO_ROOT",
+            os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        )
+        local_path = os.path.join(repo_root, img_path)
+        if os.path.exists(local_path):
+            img_path = local_path
+            
+    # Route via orchestrator
+    orchestrator_result = orchestrator_service.trigger_engine("filesystem", img_path)
+    
+    if orchestrator_result["status"] == "FAILED":
+        raise HTTPException(status_code=500, detail=orchestrator_result["logs"])
+        
+    engine_result = orchestrator_result.get("result", {})
+    recovery_id = orchestrator_result["execution_id"]
+    
+    result = {
+        "execution_id": recovery_id,
+        "image_path": img_path,
+        "fragments_extracted": engine_result.get("files_found", 0),
+        "relationships_scored": 0,
+        "graph": {"nodes": engine_result.get("files_found", 0), "edges": 0},
+        "status": "COMPLETED",
+        "engine_logs": orchestrator_result["logs"]
+    }
+    
+    RECOVERY_RESULTS[recovery_id] = result
+    
+    return {
+        "success": True,
+        "jobId": recovery_id,
+        "data": result
+    }
+
+@app.get("/api/cases")
+def get_cases():
+    return []
+
 

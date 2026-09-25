@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PageHeader, SectionCard, StatusBadge, EmptyState } from '../components/common';
-import { evidenceApi, type Evidence } from '../api/evidence';
+import { evidenceApi } from '../api/evidence';
+import type { Evidence } from '../api/evidence';
 import { Plus, Search } from 'lucide-react';
 
 export default function EvidenceList() {

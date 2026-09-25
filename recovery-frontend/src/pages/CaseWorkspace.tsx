@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
-import { PageHeader, SectionCard, StatusBadge, StatusDot, ErrorState, LoadingState, EmptyState } from '../components/common';
-import { casesApi, Case, CaseEvidence, CaseRecovery, CaseFile, CaseTimelineEvent, CaseFragment, CaseGraphData, CaseValidation, CaseReport, CaseAudit } from '../api/cases';
-import { Briefcase, HardDrive, Activity, FileText, Database, GitBranch, Shield, Clock, Search, FolderOpen, Play, CheckCircle, AlertTriangle, FileBox } from 'lucide-react';
+import { SectionCard, StatusBadge, ErrorState, LoadingState, EmptyState } from '../components/common';
+import { casesApi } from '../api/cases';
+import type { Case, CaseEvidence, CaseRecovery, CaseFile, CaseTimelineEvent, CaseFragment, CaseGraphData, CaseValidation, CaseReport, CaseAudit } from '../api/cases';
+import { Briefcase, HardDrive, Activity, FileText, Database, GitBranch, Shield, Clock, Search, Play, CheckCircle, AlertTriangle, FileBox } from 'lucide-react';
 import './CaseWorkspace.css';
 
 const TABS = [

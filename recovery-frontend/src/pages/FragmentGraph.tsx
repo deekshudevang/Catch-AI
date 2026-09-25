@@ -3,7 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import { SectionCard } from '../components/common';
 import type { GraphData, ReconstructionPath, GraphNode, GraphEdge } from '../api/graph';
 import { GitMerge, ZoomIn, ZoomOut, Maximize, RotateCcw } from 'lucide-react';
-import ForceGraph2D, { ForceGraphMethods } from 'react-force-graph-2d';
+import ForceGraph2D from 'react-force-graph-2d';
+import type { ForceGraphMethods } from 'react-force-graph-2d';
 
 export default function FragmentGraph() {
   const { recoveryId } = useParams<{ recoveryId: string }>();

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader, SectionCard, StatusBadge, ErrorState, LoadingState, EmptyState } from '../components/common';
-import { casesApi, Case } from '../api/cases';
+import { casesApi } from '../api/cases';
+import type { Case } from '../api/cases';
 import { Briefcase, Plus, Search } from 'lucide-react';
 
 export default function CaseList() {
