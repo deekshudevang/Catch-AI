@@ -193,8 +193,8 @@ def recover_scan(req: RecoverRequest):
         "graph": {"nodes": engine_result.get("files_found", 0), "edges": 0},
         "carved_files": carving_engine_result.get("files_found", 0),
         "files": carving_engine_result.get("files", []),
-        "status": "COMPLETED",
-        "engine_logs": orchestrator_result.get("logs", []) + carving_result.get("logs", []),
+        "status": "COMPLETED" if carving_result["status"] == "SUCCESS" else "PARTIAL" if orchestrator_result["status"] == "SUCCESS" else "FAILED",
+        "engine_logs": [orchestrator_result.get("logs"), carving_result.get("logs")],
         "execution_trace": carving_result.get("result", {})
     }
     
