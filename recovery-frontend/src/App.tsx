@@ -50,7 +50,9 @@ function App() {
                 <Route path="/recovery/:recoveryId" element={<Recovery />} />
                 <Route path="/recovery/:recoveryId/files" element={<RecoveredFiles />} />
                 <Route path="/fragments"   element={<Fragments />} />
+                <Route path="/recovery/:recoveryId/fragments" element={<Fragments />} />
                 <Route path="/graph"       element={<GraphPage />} />
+                <Route path="/graph/:recoveryId" element={<GraphPage />} />
                 <Route path="/validation"  element={<Validation />} />
                 <Route path="/engines"     element={<EngineMonitor />} />
                 <Route path="/reports"     element={<Reports />} />
