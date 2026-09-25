@@ -117,19 +117,19 @@ def analyze(req: RecoverRequest):
 
 @app.post("/api/recovery/recover")
 def recover(req: RecoverRequest):
-    return {"status": "mock", "message": "use /api/demo/run for hackathon demo"}
+    raise HTTPException(status_code=501, detail="Endpoint not implemented; use /api/recover/scan.")
 
 @app.post("/api/recovery/fragments/analyze")
 def fragments_analyze():
-    return {"status": "mock", "message": "use /api/demo/run for hackathon demo"}
+    raise HTTPException(status_code=501, detail="Endpoint not implemented; use /api/recover/scan.")
 
 @app.post("/api/recovery/reconstruct")
 def reconstruct():
-    return {"status": "mock", "message": "use /api/demo/run for hackathon demo"}
+    raise HTTPException(status_code=501, detail="Endpoint not implemented; use /api/recover/scan.")
 
 @app.post("/api/recovery/validate")
 def validate():
-    return {"status": "mock", "message": "use /api/demo/run for hackathon demo"}
+    raise HTTPException(status_code=501, detail="Endpoint not implemented; use /api/recover/scan.")
 
 @app.get("/api/recovery/jobs/{job_id}")
 def get_job(job_id: str):
