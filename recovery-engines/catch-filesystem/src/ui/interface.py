@@ -11,6 +11,9 @@ from colorama import Fore, Back, Style, init
 from tqdm import tqdm
 
 # Khởi tạo colorama
+import sys
+if sys.platform == 'win32':
+    sys.stdout.reconfigure(encoding='utf-8')
 init(autoreset=True)
 
 

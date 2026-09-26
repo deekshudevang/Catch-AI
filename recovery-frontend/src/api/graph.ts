@@ -29,8 +29,22 @@ export interface ReconstructionPath {
   fragments: any[];
 }
 
+const API_URL = 'http://localhost:8000';
+
 export const graphApi = {
-  get: async (_jobId: string): Promise<GraphData> => ({ nodes: [], edges: [] }),
-  getGraph: async (_jobId?: string, _param2?: any, _param3?: any): Promise<GraphData> => ({ nodes: [], edges: [] }),
-  getProbablePaths: async (_jobId?: string): Promise<ReconstructionPath[]> => [],
+  get: async (jobId: string): Promise<GraphData> => {
+    const res = await fetch(`${API_URL}/api/recoveries/${jobId}/graph`);
+    return res.json();
+  },
+  getGraph: async (jobId?: string, param2?: any, param3?: any): Promise<GraphData> => {
+    const id = param3 || param2 || jobId;
+    if (!id) return { nodes: [], edges: [] };
+    const res = await fetch(`${API_URL}/api/recoveries/${id}/graph`);
+    return res.json();
+  },
+  getProbablePaths: async (jobId?: string): Promise<ReconstructionPath[]> => {
+    if (!jobId) return [];
+    const res = await fetch(`${API_URL}/api/recoveries/${jobId}/paths`);
+    return res.json();
+  },
 };

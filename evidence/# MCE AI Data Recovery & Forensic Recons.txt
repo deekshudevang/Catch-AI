@@ -1,0 +1,68 @@
+# MCE AI Data Recovery & Forensic Reconstruction Studio
+
+[Home](http://127.0.0.1:8000/#home)
+[About](http://127.0.0.1:8000/#about)
+[Features](http://127.0.0.1:8000/#features)
+[Contact](http://127.0.0.1:8000/#contact)
+
+## Data Recovery Reimagined
+We use advanced AI and forensic techniques to reconstruct data you thought was lost forever. Our engine understands the context, structure, and fragments to bring back what can be proven.
+
+## Advanced Forensic Capabilities
+
+### Deep Fragment Analysis
+Analyze disparate fragments and connect them using machine learning.
+
+### Evidence Integrity
+Source evidence is never modified. Read-only forensic operations.
+
+### Hex Verification
+Inspect raw sector byte maps to verify reconstruction integrity.
+
+### AI Semantic Repair
+Our models understand text and data structures to fix corrupted boundaries.
+
+### NTFS/FAT/EXT Support
+Deleted file extraction directly from raw disk images.
+
+### Detailed Reporting
+Generate court-admissible forensic validation reports.
+
+## Begin Your Recovery
+Upload your corrupt files or connect a disk image to see the forensic engine in action.
+[support@mce-ai.com](mailto:support@mce-ai.com)
+[Back to top](http://127.0.0.1:8000/#home)
+MCE AI Data Recovery & Forensic Reconstruction Studio. Recover what can be proven.
+
+# MCE AI Data Recovery Studio
+
+## Recover what can be proven.
+Read-only environment. Source evidence is never modified.
+
+### Drag & Drop Corrupted Files
+Or select files/folders to begin forensic ingestion
+
+### Provide Disk Image (.dd, .raw, .img)
+Read-only extraction from forensic images
+
+### Select Physical/Logical Drive
+Administrator rights required to access raw drives.
+
+#### Results
+
+### Ingested Evidence
+
+### Recovered Artifacts
+
+### Artifact Inspector
+
+#### Assessment
+Partial header reconstruction applied. AI semantic repair bridged gap between sector 0x4A and 0x5F.
+
+#### Applied Repairs
+- Rebuilt magic header (PDF)
+- Stitched fragmented EOF marker
+
+```
+00000000 25 50 44 46 2d 31 2e 34 0a 25 c3 a4 c3 bc c3 b6 |%PDF-1.4.%......| 00000010 0a 31 20 30 20 6f 62 6a 0a 3c 3c 2f 54 79 70 65 |.1 0 obj.<
+```

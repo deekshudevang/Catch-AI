@@ -1,3 +1,7 @@
+import { useState, useEffect } from 'react';
+import ForceGraph2D from 'react-force-graph-2d';
+import { graphApi } from '../api/graph';
+import { backendApi } from '../api/client';
 import { 
   Search, Folder, File, Activity, Link, 
   FileText, CheckCircle, Shield, Database, Download, Check, AlertTriangle, Info, Play, HardDrive
@@ -99,6 +103,33 @@ export function Fragments() {
 }
 
 export function Graph() {
+  const [graphData, setGraphData] = useState<any>({ nodes: [], links: [] });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadGraph() {
+      try {
+        const jobsResponse = await backendApi.jobs();
+        if (jobsResponse && jobsResponse.jobs && jobsResponse.jobs.length > 0) {
+          const jobId = jobsResponse.jobs[0].job_id || jobsResponse.jobs[0].id;
+          const data = await graphApi.get(jobId);
+          setGraphData({
+            nodes: data.nodes.map((n: any) => ({
+              ...n,
+              val: n.type === 'RECOVERY_JOB' ? 20 : n.type === 'ARTIFACT' ? 10 : 5
+            })),
+            links: data.edges
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadGraph();
+  }, []);
+
   return (
     <div className="flex flex-col gap-8 w-full max-w-6xl mx-auto py-6 h-[calc(100vh-8rem)]">
       <div className="flex justify-between items-end">
@@ -107,20 +138,28 @@ export function Graph() {
           <p className="text-gray-500">Visual layout of linked evidence and file structures</p>
         </div>
       </div>
-      <div className="flex-1 surface-card relative overflow-hidden bg-gray-50/50 flex items-center justify-center">
-        <div className="hero-grid-lines absolute inset-0 opacity-40"></div>
-        <div className="relative z-10 flex flex-col items-center gap-4 text-center">
-          <div className="p-4 bg-white rounded-2xl shadow-sm border border-gray-200">
-            <Link size={48} className="text-green-primary mx-auto" />
+      <div className="flex-1 surface-card relative overflow-hidden bg-white flex items-center justify-center">
+        {loading ? (
+          <div>Loading graph...</div>
+        ) : graphData.nodes.length === 0 ? (
+          <div className="relative z-10 flex flex-col items-center gap-4 text-center">
+            <div className="p-4 bg-white rounded-2xl shadow-sm border border-gray-200">
+              <Link size={48} className="text-green-primary mx-auto" />
+            </div>
+            <h2 className="text-xl font-semibold text-gray-800">Graph visualization is inactive</h2>
+            <p className="text-gray-500 max-w-sm">
+              No graph data available. Run a recovery job first.
+            </p>
           </div>
-          <h2 className="text-xl font-semibold text-gray-800">Graph visualization is inactive</h2>
-          <p className="text-gray-500 max-w-sm">
-            Select a specific case and fragment to map out structural relationships across the evidence image.
-          </p>
-          <button className="px-4 py-2 mt-2 bg-white border border-gray-200 shadow-sm rounded-lg text-sm font-medium hover:bg-gray-50">
-            Load Mock Graph
-          </button>
-        </div>
+        ) : (
+          <ForceGraph2D 
+            graphData={graphData}
+            nodeAutoColorBy="type"
+            nodeLabel="label"
+            linkDirectionalArrowLength={3.5}
+            linkDirectionalArrowRelPos={1}
+          />
+        )}
       </div>
     </div>
   );
