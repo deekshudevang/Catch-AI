@@ -33,19 +33,30 @@ class CatchAIRecoveryService(win32serviceutil.ServiceFramework):
         self.main()
 
     def main(self):
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        python_exe = os.path.join(base_dir, "venv", "Scripts", "python.exe")
-        logging.info(f"base_dir is {base_dir}")
-        logging.info(f"python_exe is {python_exe}")
-        
-        cmd = [python_exe, "-m", "uvicorn", "main:app", "--host", "127.0.0.1", "--port", "8000"]
-        log_file = open(os.path.join(base_dir, "uvicorn_service.log"), "w")
-        self.process = subprocess.Popen(cmd, cwd=base_dir, stdout=log_file, stderr=subprocess.STDOUT)
-        logging.info(f"Subprocess started with PID {self.process.pid}")
-        
-        win32event.WaitForSingleObject(self.hWaitStop, win32event.INFINITE)
-        if self.process:
-            self.process.terminate()
+        import traceback
+        try:
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            python_exe = os.path.join(base_dir, "venv", "Scripts", "python.exe")
+            logging.info(f"base_dir is {base_dir}")
+            logging.info(f"python_exe is {python_exe}")
+            
+            cmd = [python_exe, "-u", "-m", "uvicorn", "main:app", "--host", "127.0.0.1", "--port", "8000"]
+            log_file_path = os.path.join(base_dir, "uvicorn_service.log")
+            log_file = open(log_file_path, "a", buffering=1)
+            
+            # Use CREATE_NO_WINDOW so it doesn't fail when there is no console
+            CREATE_NO_WINDOW = 0x08000000
+            self.process = subprocess.Popen(cmd, cwd=base_dir, stdout=log_file, stderr=subprocess.STDOUT, creationflags=CREATE_NO_WINDOW)
+            logging.info(f"Subprocess started with PID {self.process.pid}")
+            
+            win32event.WaitForSingleObject(self.hWaitStop, win32event.INFINITE)
+            if self.process:
+                self.process.terminate()
+                self.process.wait(timeout=5)
+            log_file.close()
+        except Exception as e:
+            logging.error(f"Error in main: {e}\n{traceback.format_exc()}")
+            self.SvcStop()
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:

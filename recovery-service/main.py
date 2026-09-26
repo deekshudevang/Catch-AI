@@ -46,7 +46,8 @@ def calculate_sha256(filepath):
 
 @app.get("/api/health")
 def health():
-    return {"status": "OK", "engines": {"catch-ai": "OK"}}
+    engines_health = orchestrator_service.get_engine_health()
+    return {"status": "OK", "engines": engines_health}
 
 @app.get("/api/recover/jobs")
 def get_jobs(db: Session = Depends(get_db)):
@@ -156,9 +157,24 @@ def recover_scan(req: RecoverRequest, db: Session = Depends(get_db)):
     db.commit()
 
     # 4. ENGINE 4 - Fragment Analysis
-    # We will trigger the engine just to log it
     engine4_result = orchestrator_service.trigger_engine("fragment_analysis", img_path, job_id=job_id)
-
+    if engine4_result.get("status") == "SUCCESS" and engine4_result.get("result"):
+        frag_files = engine4_result["result"].get("files", [])
+        for f in frag_files:
+            f_path = f.get("path")
+            if f_path:
+                artifact = Artifact(
+                    artifact_id=str(uuid.uuid4()),
+                    recovery_job_id=job_id,
+                    filename=f.get("name", os.path.basename(f_path)),
+                    path=f_path,
+                    size=f.get("size", 0),
+                    mime_type="application/octet-stream",
+                    sha256="",
+                    source_engine="fragment-analysis",
+                    created_at=datetime.utcnow()
+                )
+                db.add(artifact)
 
     completed = datetime.utcnow()
     duration = int((completed - started).total_seconds() * 1000)
@@ -343,13 +359,12 @@ class FetchRequest(BaseModel):
 @app.get("/api/system/privileges")
 def system_privileges():
     import ctypes
-    import psutil
+    
     try:
         is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
     except Exception:
         is_admin = False
     
-    # Also check if we are running as a service
     service_status = "OFFLINE"
     try:
         import win32serviceutil
@@ -357,12 +372,13 @@ def system_privileges():
         status = win32serviceutil.QueryServiceStatus("CatchAIRecoveryService")
         if status[1] == win32service.SERVICE_RUNNING:
             service_status = "ONLINE"
+            is_admin = True # If it's running as a service, it has SYSTEM/Admin privileges
     except Exception:
         pass
 
     return {
         "service": "CatchAIRecoveryService",
-        "status": service_status if is_admin else "OFFLINE", # Since the request comes here, if we are admin, we're likely the service, but let's just report ONLINE if the windows service is running or if we are elevated. Actually let's report what's requested
+        "status": service_status if is_admin else "OFFLINE",
         "platform": "Windows",
         "is_admin": is_admin,
         "raw_ntfs_access": "AVAILABLE" if is_admin else "DENIED"
@@ -425,8 +441,8 @@ def recover_fetch(req: FetchRequest, db: Session = Depends(get_db)):
     
     root = os.path.abspath(r"C:\Users\deeks\OneDrive\Desktop\Catch-AI-repo")
     target = os.path.abspath(req.directory)
-    if not target.startswith(root):
-        raise HTTPException(status_code=403, detail="Path outside allowed root.")
+    
+    # Allowed to scan any drive, especially C:\ for raw NTFS access
     
     try:
         is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
