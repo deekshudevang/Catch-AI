@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCE AI Data Recovery & Forensic Reconstruction Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="landing-active">
+
+    <!-- PAGE 1: LANDING PAGE -->
+    <div id="landing-page">
+        <section class="hero-section" id="home">
+            <div class="hero-overlay">
+                <nav class="top-nav">
+                    <div class="nav-links">
+                        <a href="#home">Home</a>
+                        <a href="#about">About</a>
+                        <a href="#features">Features</a>
+                        <a href="#contact">Contact</a>
+                    </div>
+                </nav>
+                <div class="hero-cta">
+                    <button class="pill-btn primary" onclick="openRecoveryWorkspace()">Recover Now &rarr;</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="content-section">
+            <div class="container">
+                <span class="eyebrow">ABOUT</span>
+                <h2>Data Recovery Reimagined</h2>
+                <p class="lead">We use advanced AI and forensic techniques to reconstruct data you thought was lost forever. Our engine understands the context, structure, and fragments to bring back what can be proven.</p>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-num">99%</div>
+                        <div class="stat-caption">Recovery rate on healthy sectors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-num">50+</div>
+                        <div class="stat-caption">File types natively supported</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-num">AI</div>
+                        <div class="stat-caption">Powered semantic reconstruction</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="content-section alternate">
+            <div class="container">
+                <span class="eyebrow">FEATURES</span>
+                <h2>Advanced Forensic Capabilities</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon-chip">🔍</div>
+                        <h3>Deep Fragment Analysis</h3>
+                        <p>Analyze disparate fragments and connect them using machine learning.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon-chip">🛡️</div>
+                        <h3>Evidence Integrity</h3>
+                        <p>Source evidence is never modified. Read-only forensic operations.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon-chip">📊</div>
+                        <h3>Hex Verification</h3>
+                        <p>Inspect raw sector byte maps to verify reconstruction integrity.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon-chip">🧠</div>
+                        <h3>AI Semantic Repair</h3>
+                        <p>Our models understand text and data structures to fix corrupted boundaries.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon-chip">📁</div>
+                        <h3>NTFS/FAT/EXT Support</h3>
+                        <p>Deleted file extraction directly from raw disk images.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon-chip">📑</div>
+                        <h3>Detailed Reporting</h3>
+                        <p>Generate court-admissible forensic validation reports.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="content-section">
+            <div class="container">
+                <span class="eyebrow">READY TO START?</span>
+                <h2>Begin Your Recovery</h2>
+                <p class="lead">Upload your corrupt files or connect a disk image to see the forensic engine in action.</p>
+                <div class="cta-actions">
+                    <button class="pill-btn primary" onclick="openRecoveryWorkspace()">Recover Now &rarr;</button>
+                    <a href="mailto:support@mce-ai.com" class="mailto-link">support@mce-ai.com</a>
+                </div>
+                <div style="margin-top:2rem">
+                    <a href="#home" class="back-to-top">Back to top</a>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>MCE AI Data Recovery & Forensic Reconstruction Studio. Recover what can be proven.</p>
+        </footer>
+    </div>
+
+    <!-- PAGE 2: RECOVERY WORKSPACE -->
+    <div id="workspace-page">
+        <header class="workspace-nav">
+            <div class="nav-left">
+                <div class="brand-badge"></div>
+                <div class="titles">
+                    <h1>MCE AI Data Recovery Studio</h1>
+                    <span class="subtitle">Forensic Analysis Platform</span>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="status-indicator">
+                    <span class="pulsing-dot"></span> Forensic Engine Active
+                </div>
+                <button class="btn-text" onclick="showLanding()">Home</button>
+            </div>
+        </header>
+
+        <main class="workspace-main">
+            <div class="workspace-hero">
+                <span class="badge">FORENSIC RECOVERY WORKSPACE</span>
+                <h2>Recover what can be proven.</h2>
+                <p>Read-only environment. Source evidence is never modified.</p>
+            </div>
+
+            <div class="recovery-switcher">
+                <button class="tab-btn active" data-target="panel-files" onclick="setRecoveryMode('files')">Corrupted Files & Folders</button>
+                <button class="tab-btn" data-target="panel-disk" onclick="setRecoveryMode('disk')">Deleted Files from Disk Image (.dd/.raw)</button>
+                <button class="tab-btn" data-target="panel-drive" onclick="setRecoveryMode('drive')">Deleted Files from Drive (NTFS)</button>
+            </div>
+
+            <div class="sample-actions">
+                <span class="label">Start with a sample:</span>
+                <button class="pill-btn small" onclick="loadSample('doc')">Sample Document</button>
+                <button class="pill-btn small" onclick="loadSample('image')">Sample Disk Image</button>
+            </div>
+
+            <div id="panel-files" class="panel active">
+                <div class="dropzone">
+                    <div class="drop-icon">📂</div>
+                    <h3>Drag & Drop Corrupted Files</h3>
+                    <p>Or select files/folders to begin forensic ingestion</p>
+                    <div class="drop-actions">
+                        <input type="file" id="file-upload" class="hidden" accept=".dd,.raw,.img,*/*">
+                        <button class="pill-btn primary" id="btn-select-files">Select Files</button>
+                        <button class="pill-btn secondary" id="btn-upload-folder">Upload Folder</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel-disk" class="panel">
+                <div class="dropzone">
+                    <div class="drop-icon">💽</div>
+                    <h3>Provide Disk Image (.dd, .raw, .img)</h3>
+                    <p>Read-only extraction from forensic images</p>
+                    <button class="pill-btn primary">Select Disk Image</button>
+                </div>
+            </div>
+
+            <div id="panel-drive" class="panel">
+                <div class="drive-card">
+                    <h3>Select Physical/Logical Drive</h3>
+                    <p class="error-banner hidden" id="admin-error">Administrator rights required to access raw drives.</p>
+                    <select id="drive-select">
+                        <option value="">Select a drive...</option>
+                        <option value="C:">C: (NTFS) - 512GB</option>
+                        <option value="D:">D: (exFAT) - 1TB</option>
+                    </select>
+                    <div class="drive-actions">
+                        <button class="pill-btn primary" onclick="scanDrive()">Scan Drive for Deleted Files</button>
+                    </div>
+                    <div class="drive-results hidden" id="drive-results">
+                        <h4>Results</h4>
+                        <ul class="results-list" id="drive-results-list">
+                        </ul>
+                        <button class="banner-btn">Download All Recovered (.zip)</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="workspace-grid hidden" id="workspace-grid">
+                <div class="grid-card left-col">
+                    <h3>Ingested Evidence</h3>
+                    <ul class="evidence-list" id="evidence-list">
+                    </ul>
+                </div>
+                <div class="grid-card right-col">
+                    <h3>Recovered Artifacts</h3>
+                    <ul class="artifact-list" id="artifact-list">
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Inspector Modal -->
+    <div class="modal-overlay hidden" id="inspector-modal">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3>Artifact Inspector</h3>
+                <button class="close-btn" onclick="closeInspector()">&times;</button>
+            </header>
+            <div class="modal-tabs">
+                <button class="modal-tab active" onclick="switchModalTab('notes')">Extracted Notes & Text</button>
+                <button class="modal-tab" onclick="switchModalTab('graph')">Fragment Relationship Graph</button>
+                <button class="modal-tab" onclick="switchModalTab('assessment')">Integrity & Assessment</button>
+                <button class="modal-tab" onclick="switchModalTab('hex')">Raw Sector Byte Map</button>
+            </div>
+            <div class="modal-body">
+                <div id="tab-notes" class="modal-panel active">
+                    <textarea readonly class="text-extractor">Extracted content goes here...</textarea>
+                </div>
+                <div id="tab-graph" class="modal-panel">
+                    <canvas id="graph-canvas" width="600" height="400"></canvas>
+                </div>
+                <div id="tab-assessment" class="modal-panel">
+                    <div class="score-bars">
+                        <div class="bar-row"><label>Integrity</label><div class="bar-track"><div class="bar-fill" style="width: 85%">85%</div></div></div>
+                        <div class="bar-row"><label>Realism</label><div class="bar-track"><div class="bar-fill" style="width: 92%">92%</div></div></div>
+                    </div>
+                    <h4>Assessment</h4>
+                    <p>Partial header reconstruction applied. AI semantic repair bridged gap between sector 0x4A and 0x5F.</p>
+                    <h4>Applied Repairs</h4>
+                    <ul>
+                        <li>Rebuilt magic header (PDF)</li>
+                        <li>Stitched fragmented EOF marker</li>
+                    </ul>
+                </div>
+                <div id="tab-hex" class="modal-panel">
+                    <pre class="hex-viewer">00000000  25 50 44 46 2d 31 2e 34  0a 25 c3 a4 c3 bc c3 b6  |%PDF-1.4.%......|
+00000010  0a 31 20 30 20 6f 62 6a  0a 3c 3c 2f 54 79 70 65  |.1 0 obj.<</Type|
+                    </pre>
+                </div>
+            </div>
+            <footer class="modal-footer">
+                <button class="pill-btn secondary" onclick="closeInspector()">Close</button>
+                <button class="pill-btn primary">Download Restored File</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

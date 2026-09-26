@@ -146,7 +146,7 @@ export default function FragmentGraph() {
                    <div><span className="text-muted">Score:</span> {selectedLink.score}</div>
                    <div><span className="text-muted">Reasons:</span></div>
                    <ul className="list-disc list-inside">
-                     {selectedLink.reasons.map((r, i) => <li key={i}>{r}</li>)}
+                     {selectedLink.reasons.map((r: any, i: any) => <li key={i}>{r}</li>)}
                    </ul>
                  </div>
                ) : (
@@ -168,7 +168,7 @@ export default function FragmentGraph() {
                   <div>Fragments: <span className="font-bold text-foreground">{paths[0].fragment_count}</span></div>
                </div>
                
-               {paths[0].fragments.map((frag, idx) => (
+               {paths[0].fragments.map((frag: any, idx: any) => (
                  <React.Fragment key={frag}>
                    <div className="bg-[var(--surface-active)] px-3 py-2 rounded border border-[var(--border)] font-mono text-sm">
                      {frag}

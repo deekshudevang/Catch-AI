@@ -1,0 +1,1428 @@
+<USER_REQUEST>
+/goal
+
+# CATCH-AI — MCE AI DATA RECOVERY & FORENSIC RECONSTRUCTION STUDIO UI/UX OVERHAUL
+
+Transform the EXISTING CATCH-AI website into:
+
+"MCE AI Data Recovery & Forensic Reconstruction Studio"
+
+Use the following specification as the exact visual and interaction direction.
+
+IMPORTANT:
+This is a UI/UX overhaul of the EXISTING CATCH-AI application.
+
+DO NOT replace the real forensic backend.
+DO NOT remove existing recovery engines.
+DO NOT create fake recovery results.
+DO NOT create fake artifacts.
+DO NOT create fake percentages.
+DO NOT replace real API responses with demo data.
+DO NOT rebuild the application as a frontend-only mockup.
+
+The existing CATCH-AI forensic functionality must remain the source of truth.
+
+==================================================
+1. FIRST — AUDIT THE EXISTING PROJECT
+==================================================
+
+Before editing anything inspect:
+
+recovery-frontend/
+recovery-service/
+
+Inspect:
+
+- frontend architecture
+- routing
+- API client
+- FastAPI routes
+- existing recovery workflow
+- artifact API
+- fragment API
+- reconstruction API
+- validation API
+- existing live-monitor APIs
+- existing case APIs
+- existing jobs APIs
+
+Determine which functionality already exists.
+
+Do not duplicate endpoints.
+
+The frontend must consume actual FastAPI APIs.
+
+==================================================
+2. FRONTEND TECHNOLOGY DECISION
+==================================================
+
+The requested visual specification says:
+
+"vanilla HTML + CSS + JavaScript"
+
+However, CATCH-AI already uses React/Vite/TypeScript.
+
+DO NOT unnecessarily migrate the existing application.
+
+Implement the specified visual design and behavior in the existing React/Vite/TypeScript frontend.
+
+Do NOT introduce another frontend framework.
+
+Use:
+
+React
+TypeScript
+CSS
+
+The resulting UI must visually follow the specification below.
+
+==================================================
+3. APPLICATION IDENTITY
+==================================================
+
+Display:
+
+MCE AI Data Recovery
+&
+Forensic Reconstruction Studio
+
+The application should communicate:
+
+professional
+forensic
+evidence-first
+calm
+trustworthy
+technical
+non-destructive
+
+Avoid aggressive cybersecurity styling.
+
+Use evidence-first language.
+
+==================================================
+4. LANDING PAGE
+==================================================
+
+Create a completely redesigned landing page.
+
+Full viewport hero.
+
+If a real supplied hero artwork exists in the repository, use it.
+
+If no artwork exists:
+
+DO NOT invent a fake forensic evidence result.
+
+Create a clean CSS-based hero background matching the palette instead.
+
+Hero:
+
+100vw
+100vh
+
+Use:
+
+object-fit: fill
+object-position: center
+
+only when a real artwork image is available.
+
+==================================================
+5. LANDING PALETTE
+==================================================
+
+Use these exact design tokens:
+
+Page / hero:
+
+#eceed6
+#fcf6ea
+
+Primary green:
+
+#418c4b
+
+Deep green:
+
+#357a41
+
+Light green:
+
+#4d9e5c
+
+Section backgrounds:
+
+#f6f8ef
+#eef1e2
+
+Heading:
+
+#24301f
+
+Body:
+
+#4b5647
+#5c6657
+
+Card:
+
+#ffffff
+
+Border:
+
+#e2e7d6
+
+Shadow:
+
+rgba(53,90,45,.06)
+
+Footer:
+
+#24301f
+
+Footer text:
+
+#cdd6c6
+
+==================================================
+6. TYPOGRAPHY
+==================================================
+
+Use:
+
+Outfit
+
+for:
+
+brand
+large headings
+section headings
+buttons
+
+Use:
+
+Inter
+
+for:
+
+body
+descriptions
+metadata
+navigation
+
+Fallback:
+
+sans-serif
+
+Load Google Fonts only if network access is available.
+
+Provide sensible fallback fonts.
+
+==================================================
+7. HERO NAVIGATION
+==================================================
+
+Top-left navigation:
+
+Home
+About
+Features
+Contact
+
+Use dark-green text.
+
+Hover:
+
+green underline
+
+Click:
+
+smooth-scroll
+
+Use:
+
+scrollIntoView({
+    behavior: "smooth"
+})
+
+Navigation must be keyboard accessible.
+
+==================================================
+8. HERO CTA
+==================================================
+
+Mid-left:
+
+Recover Now →
+
+Button:
+
+border-radius: 42px
+
+background:
+
+linear-gradient(
+    135deg,
+    #4d9e5c,
+    #357a41
+)
+
+white bold text
+
+soft green shadow
+
+Hover:
+
+translateY(-2px)
+
+brighten
+
+arrow moves slightly right
+
+Click:
+
+openRecoveryWorkspace()
+
+==================================================
+9. LANDING SECTIONS
+==================================================
+
+ABOUT
+
+Eyebrow:
+
+ABOUT
+
+Heading describing evidence-first recovery.
+
+Lead paragraph.
+
+Three real/statistical cards.
+
+IMPORTANT:
+
+Do not invent statistics.
+
+If actual backend statistics are available, load them.
+
+Otherwise use descriptive capability cards instead of fake numbers.
+
+Example:
+
+Forensic Engines
+Evidence-backed
+
+Recovery Sources
+Multiple
+
+Data Integrity
+Hash Verified
+
+But do not imply validation if it has not happened.
+
+==================================================
+10. FEATURES
+==================================================
+
+Use darker sage:
+
+#eef1e2
+
+Six feature cards.
+
+Suggested capabilities based on ACTUAL CATCH-AI functionality:
+
+Forensic Recovery
+Evidence Analysis
+Fragment Intelligence
+Reconstruction
+Validation
+Case Intelligence
+
+Each:
+
+light-green icon chip
+title
+short description
+
+Cards lift slightly on hover.
+
+Do not describe capabilities that are not actually implemented as available.
+
+==================================================
+11. CONTACT / CTA
+==================================================
+
+Centered:
+
+CONTACT / GET STARTED
+
+Heading
+
+short lead
+
+Recover Now →
+
+mailto link
+
+Back to top
+
+CTA opens workspace.
+
+==================================================
+12. FOOTER
+==================================================
+
+Dark:
+
+#24301f
+
+One-line forensic tagline.
+
+Example:
+
+"Recover what can be proven. Preserve what cannot."
+
+Do not claim legal/court certification.
+
+==================================================
+13. LANDING / WORKSPACE TRANSITION
+==================================================
+
+Implement:
+
+openRecoveryWorkspace()
+
+Behavior:
+
+remove:
+
+landing-active
+
+from body.
+
+Workspace becomes visible.
+
+Use smooth opacity/transform transition.
+
+Implement:
+
+showLanding()
+
+Behavior:
+
+add:
+
+landing-active
+
+scroll to top.
+
+Home button must call showLanding().
+
+==================================================
+14. RECOVERY WORKSPACE
+==================================================
+
+Use a dark professional forensic theme.
+
+Do NOT use the old generic dashboard styling.
+
+Workspace colors:
+
+dark navy
+charcoal
+deep slate
+
+Accent:
+
+cyan
+emerald
+amber
+red only for errors
+
+Keep:
+
+monospace
+
+for:
+
+hashes
+offsets
+hex
+technical metadata
+
+==================================================
+15. TOP NAVBAR
+==================================================
+
+Sticky.
+
+Left:
+
+brand badge
+MCE AI Data Recovery Studio
+
+subtitle:
+
+Forensic Reconstruction Workspace
+
+Right:
+
+Home
+
+status pill:
+
+● Forensic Engine Active
+
+IMPORTANT:
+
+"Forensic Engine Active" must reflect the actual backend health.
+
+If backend unavailable:
+
+● Forensic Engine Offline
+
+Do not always display Active.
+
+==================================================
+16. WORKSPACE HERO
+==================================================
+
+Eyebrow:
+
+FORENSIC RECOVERY WORKSPACE
+
+Heading:
+
+Recover what can be proven.
+
+Supporting text:
+
+"Analyze evidence, recover what the underlying data supports, and preserve uncertainty when reconstruction cannot be established."
+
+Do not claim guaranteed recovery.
+
+==================================================
+17. RECOVERY MODE SWITCHER
+==================================================
+
+Three tabs:
+
+Corrupted Files & Folders
+
+Deleted Files from Disk Image (.dd/.raw)
+
+Deleted Files from Drive (NTFS)
+
+Implement:
+
+setRecoveryMode(mode)
+
+Only one mode active.
+
+Accessible:
+
+role="tab"
+aria-selected
+
+Keyboard navigation.
+
+==================================================
+18. CORRUPTED FILES MODE
+==================================================
+
+Large dashed drop zone.
+
+Icon.
+
+Title:
+
+Drop evidence files here
+
+Subtitle:
+
+"Read-only analysis. Source evidence is never modified."
+
+Buttons:
+
+Select Files
+Upload Folder
+
+Use actual browser File APIs.
+
+==================================================
+19. DISK IMAGE MODE
+==================================================
+
+Drop zone.
+
+Title:
+
+Upload forensic disk image
+
+Subtitle:
+
+Supported:
+
+.dd
+.raw
+
+Only display formats actually accepted by backend.
+
+Button:
+
+Select Disk Image
+
+After selection:
+
+upload using multipart/form-data.
+
+Do not send the browser's local path.
+
+==================================================
+20. DRIVE MODE
+==================================================
+
+Display drive selector.
+
+Use backend-provided available drives where implemented.
+
+Do not fabricate drives.
+
+Button:
+
+Scan Drive for Deleted Files
+
+Display:
+
+Read-only
+
+Source evidence is never modified.
+
+If administrator privileges are required and unavailable:
+
+show:
+
+Administrator privileges are required for direct drive acquisition.
+
+Do not pretend scan succeeded.
+
+==================================================
+21. SAMPLE BUTTONS
+==================================================
+
+"Start with a sample"
+
+Only provide sample fixtures if they actually exist in the repository.
+
+Do not generate fake forensic samples at runtime.
+
+Use existing:
+
+test-evidence.img
+test-carving.img
+
+when appropriate.
+
+Label clearly:
+
+LOCAL TEST EVIDENCE
+
+Never imply they are real user evidence.
+
+==================================================
+22. UPLOAD PIPELINE
+==================================================
+
+This is critical.
+
+When user selects a local file:
+
+File
+ ↓
+multipart/form-data
+ ↓
+FastAPI
+ ↓
+controlled evidence storage
+ ↓
+RecoveryJob
+ ↓
+existing Recovery Orchestrator
+ ↓
+filesystem
+ ↓
+PhotoRec/TestDisk
+ ↓
+Deep Recovery
+ ↓
+Fragment Analysis
+ ↓
+Artifacts
+ ↓
+Validation
+
+Use the ACTUAL existing backend endpoint.
+
+Do not create a fake frontend recovery simulation.
+
+==================================================
+23. API CLIENT
+==================================================
+
+All requests:
+
+same-origin
+
+Use:
+
+/api/...
+
+Do not hardcode:
+
+http://localhost:8000
+
+unless required by the existing development configuration.
+
+Fix proxy/Vite configuration if necessary.
+
+IMPORTANT:
+
+For FormData:
+
+DO NOT manually set:
+
+Content-Type: application/json
+
+Allow the browser to set multipart boundaries.
+
+==================================================
+24. UPLOAD STATES
+==================================================
+
+Show truthful states:
+
+READY
+SELECTED
+UPLOADING
+QUEUED
+RUNNING
+COMPLETED
+PARTIAL
+FAILED
+
+Never show fake percentages.
+
+If actual upload progress is unavailable:
+
+Uploading...
+
+not:
+
+72%
+
+==================================================
+25. POST-UPLOAD TWO-COLUMN WORKSPACE
+==================================================
+
+Left:
+
+INGESTED EVIDENCE
+
+Each file:
+
+filename
+type
+size
+SHA256
+classification
+integrity
+damage status
+recovery state
+
+Right:
+
+RECOVERED ARTIFACTS
+
+Only show artifacts actually returned by backend.
+
+Each:
+
+filename
+size
+hash
+source engine
+provenance
+validation state
+download button
+
+==================================================
+26. FORENSIC STATUS LANGUAGE
+==================================================
+
+Use:
+
+VALIDATED_REPAIR
+PARTIAL_RECOVERY
+ORIGINAL_VALID
+FAILED_RECOVERY
+NOT_AVAILABLE
+NOT_SUPPORTED
+INCOMPLETE
+AMBIGUOUS
+UNKNOWN
+
+Do NOT convert:
+
+0 relationships
+
+into success.
+
+Do NOT convert:
+
+validation unavailable
+
+into validated.
+
+Do NOT show:
+
+100% recovered
+
+unless calculated from real backend evidence and the meaning is clearly defined.
+
+==================================================
+27. INTEGRITY / DAMAGE DISPLAY
+==================================================
+
+Use real backend values.
+
+If unavailable:
+
+NOT_AVAILABLE
+
+Do not calculate fake integrity scores in frontend.
+
+Do not calculate arbitrary damage percentages.
+
+==================================================
+28. INSPECTOR MODAL
+==================================================
+
+Clicking an artifact opens Inspector.
+
+Tabs:
+
+1. Extracted Notes & Text
+2. Fragment Relationship Graph
+3. Integrity & Realism Assessment
+4. Raw Sector Byte Map
+
+Accessible modal:
+
+role="dialog"
+
+aria-modal="true"
+
+keyboard Escape closes.
+
+Focus trapping where practical.
+
+==================================================
+29. EXTRACTED NOTES & TEXT
+==================================================
+
+Show only text actually extracted from the artifact.
+
+If none:
+
+No extracted text available.
+
+Do not generate forensic notes with AI unless clearly marked AI-generated.
+
+==================================================
+30. FRAGMENT RELATIONSHIP GRAPH
+==================================================
+
+Canvas/SVG node-link graph.
+
+Use REAL backend fragment relationships.
+
+Nodes:
+
+fragment IDs
+
+Edges:
+
+actual evidence-backed relationships.
+
+If:
+
+0 relationships
+
+display:
+
+"No evidence-backed fragment relationships were established."
+
+Do not draw fake links.
+
+==================================================
+31. INTEGRITY & REALISM ASSESSMENT
+==================================================
+
+Display:
+
+signature
+header
+footer
+structural validation
+hash
+repair actions
+provenance
+
+Use actual backend information.
+
+Do not invent a score.
+
+If backend provides no score:
+
+Not assessed
+
+==================================================
+32. RAW SECTOR BYTE MAP
+==================================================
+
+Monospace hex viewer.
+
+Display actual bytes only.
+
+Columns:
+
+Offset
+Hex
+ASCII
+
+Do not generate fake bytes.
+
+Use safe pagination/chunking.
+
+Never load massive evidence files completely into browser memory.
+
+==================================================
+33. INSPECTOR FOOTER
+==================================================
+
+Buttons:
+
+Close
+
+Download Restored File
+
+The download button must call the real backend artifact download endpoint.
+
+Do not create a browser-only fake file.
+
+==================================================
+34. TOAST SYSTEM
+==================================================
+
+Bottom-right.
+
+Types:
+
+success
+info
+warning
+error
+
+Examples:
+
+"Evidence uploaded."
+
+"Recovery job started."
+
+"Partial recovery: some evidence could not be reconstructed."
+
+"Backend unavailable."
+
+No misleading:
+
+"100% recovery complete!"
+
+==================================================
+35. SOURCE SAFETY
+==================================================
+
+Every destructive-looking action must communicate:
+
+READ-ONLY
+
+SOURCE EVIDENCE IS NEVER MODIFIED.
+
+The frontend must never overwrite the source evidence.
+
+==================================================
+36. RESPONSIVE DESIGN
+==================================================
+
+Desktop:
+
+full workspace
+
+Tablet:
+
+2-column where possible
+
+Mobile:
+
+single column
+
+Feature cards:
+
+3 → 2 → 1
+
+Recovery workspace:
+
+2 → 1
+
+Inspector:
+
+full-screen mobile modal
+
+Navigation:
+
+collapsible/mobile menu.
+
+==================================================
+37. ACCESSIBILITY
+==================================================
+
+Implement:
+
+visible focus
+
+keyboard navigation
+
+ARIA labels
+
+ARIA tabs
+
+ARIA dialogs
+
+button semantics
+
+Escape to close modal
+
+Enter/Space activation
+
+sufficient contrast
+
+reduced motion:
+
+prefers-reduced-motion
+
+==================================================
+38. REMOVE OLD GENERIC UI
+==================================================
+
+Replace the current generic rounded-card dashboard aesthetic with the specified:
+
+Landing:
+soft sage / cream
+
+Workspace:
+dark forensic workstation
+
+Do not keep duplicate dashboards.
+
+Do not leave old placeholder pages visible.
+
+==================================================
+39. KEEP REAL FORENSIC FEATURES
+==================================================
+
+The redesigned website must retain access to:
+
+Cases
+Recovery Jobs
+Artifacts
+Fragments
+Fragment Graph
+Reconstruction
+Validation
+Timeline
+Case Intelligence
+Engines
+Audit
+Settings
+Live Monitor
+AI Restoration
+
+These can be secondary navigation/views inside the new workspace.
+
+==================================================
+40. LIVE MONITOR
+==================================================
+
+Keep the previously implemented live monitoring architecture.
+
+Expose it from workspace.
+
+Display:
+
+monitored directories
+file events
+deleted candidates
+salvage status
+
+Only show real database data.
+
+==================================================
+41. AI RESTORATION
+==================================================
+
+Keep AI restoration as an OPTIONAL forensic derivative process.
+
+Clearly distinguish:
+
+AUTHENTIC DATA
+STRUCTURALLY REPAIRED
+AI RESTORED
+
+AI restored content must never appear as original evidence.
+
+If provider isn't configured:
+
+NOT_CONFIGURED
+
+==================================================
+42. LANDING STATS
+==================================================
+
+Do not hardcode:
+
+"99% recovery"
+"100% integrity"
+"10,000 files recovered"
+
+Instead load real aggregate backend values.
+
+If backend does not expose statistics, use non-numeric capability statements.
+
+==================================================
+43. BACKEND HEALTH
+==================================================
+
+The workspace status indicator must query the actual health endpoint.
+
+Possible:
+
+FORENSIC ENGINE ACTIVE
+FORENSIC ENGINE OFFLINE
+
+Do not hardcode Active.
+
+==================================================
+44. API ERROR HANDLING
+==================================================
+
+When an upload fails:
+
+show:
+
+Recovery failed
+
+HTTP status
+
+backend detail
+
+requested endpoint
+
+For 404 specifically:
+
+Recovery endpoint unavailable.
+
+This must make endpoint mismatches obvious.
+
+==================================================
+45. CURRENT 404 MUST BE FIXED
+==================================================
+
+The existing website previously produced:
+
+Recovery failed:
+HTTP 404:
+{"detail":"Not Found"}
+
+when uploading a local file.
+
+Before completing this UI overhaul:
+
+1. inspect frontend request
+2. inspect FastAPI routes
+3. inspect OpenAPI
+4. identify exact mismatch
+5. fix frontend/backend contract
+6. test actual local file upload
+
+Do NOT simply add another endpoint without understanding the existing recovery API.
+
+==================================================
+46. FRONTEND API CONTRACT
+==================================================
+
+Create a single clean API layer.
+
+Functions should conceptually include:
+
+health()
+uploadEvidence()
+getRecoveryJob()
+getArtifacts()
+getFragments()
+getRelationships()
+getValidation()
+downloadArtifact()
+getCases()
+getJobs()
+getMonitorEvents()
+
+Use actual endpoint paths discovered from backend.
+
+Do not duplicate API implementations across components.
+
+==================================================
+47. NO MOCK DATA
+==================================================
+
+Search entire frontend for:
+
+mock
+fake
+demo
+sample
+placeholder
+hardcoded
+fixture
+
+Legitimate sample fixtures are allowed only when they are real files and clearly labelled.
+
+Remove hardcoded forensic results.
+
+==================================================
+48. NO FAKE RECOVERY ANIMATION
+==================================================
+
+Do not animate:
+
+"Scanning 23%"
+"Recovering 67%"
+"Validating 91%"
+
+unless these values come from real backend progress.
+
+Use:
+
+Running...
+
+or actual backend progress.
+
+==================================================
+49. VISUAL COMPONENT SYSTEM
+==================================================
+
+Create reusable components:
+
+LandingPage
+LandingNav
+Hero
+Section
+FeatureCard
+StatCard
+WorkspaceShell
+WorkspaceNavbar
+RecoveryModeTabs
+DropZone
+DriveScanner
+EvidenceList
+ArtifactList
+ArtifactCard
+InspectorModal
+InspectorTabs
+FragmentGraph
+HexViewer
+IntegrityPanel
+StatusBadge
+Toast
+EmptyState
+ErrorBanner
+LoadingState
+
+Keep components small and maintainable.
+
+==================================================
+50. CSS ARCHITECTURE
+==================================================
+
+Use CSS variables.
+
+Example:
+
+--sage-bg
+--cream
+--green
+--green-dark
+--green-light
+--section-light
+--section-dark
+--ink
+--body
+--card
+--border
+--workspace-bg
+--workspace-surface
+--workspace-border
+--cyan
+--emerald
+--amber
+--danger
+
+Do not scatter raw colors throughout components.
+
+==================================================
+51. ANIMATION
+==================================================
+
+Landing:
+
+fade/slide
+
+Buttons:
+
+small hover lift
+
+Workspace:
+
+subtle transitions
+
+Do not over-animate forensic data.
+
+Respect:
+
+prefers-reduced-motion.
+
+==================================================
+52. FINAL BUILD
+==================================================
+
+Run:
+
+npm run build
+
+Run backend tests.
+
+Start FastAPI.
+
+Verify:
+
+GET /api/health
+
+Verify OpenAPI.
+
+Then perform an actual browser upload.
+
+Use:
+
+test-evidence.img
+
+or:
+
+test-carving.img
+
+if available.
+
+Verify:
+
+upload
+job creation
+recovery
+artifacts
+hashes
+download
+
+==================================================
+53. FINAL VERIFICATION
+==================================================
+
+Check:
+
+Landing works
+Navigation scrolls
+Recover Now opens workspace
+Home returns landing
+Mode tabs work
+File upload works
+Disk image upload works
+Drive mode correctly reports privilege limitations
+Recovery jobs are real
+Artifacts are real
+Fragment graph uses real relationships
+Hex viewer uses real bytes
+Downloads work
+Toasts work
+Modal works
+Mobile layout works
+Keyboard navigation works
+Backend offline state works
+404 issue is fixed
+No fake forensic numbers exist
+No fake recovery states exist
+Existing CATCH-AI engines still work
+
+==================================================
+54. FINAL REPORT
+==================================================
+
+Return:
+
+1. UI files changed
+2. Backend files changed
+3. API contract fixed
+4. 404 root cause
+5. Recovery upload result
+6. Existing engine regression results
+7. Frontend build result
+8. Backend test result
+9. Screens/routes implemented
+10. Known limitations
+
+Do not claim completion for functionality that was not actually tested.
+
+START BY AUDITING THE EXISTING CATCH-AI FRONTEND AND BACKEND.
+THEN IMPLEMENT THIS DESIGN WITHOUT DESTROYING THE EXISTING FORENSIC PIPELINE.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-09-26T06:21:52+05:30.
+
+The user's current state is as follows:
+Active Document: c:\Users\deeks\OneDrive\Desktop\Catch-AI-repo\recovery-service\static\styles.css (LANGUAGE_CSS)
+Cursor is on line: 1
+Other open documents:
+- c:\Users\deeks\OneDrive\Desktop\Catch-AI-repo\scripts\generate_e2e_report.py (LANGUAGE_PYTHON)
+- c:\Users\deeks\OneDrive\Desktop\Catch-AI-repo\recovery-frontend\src\api\client.ts (LANGUAGE_TYPESCRIPT)
+- c:\Users\deeks\OneDrive\Desktop\Catch-AI-repo\demo_recovery.py (LANGUAGE_PYTHON)
+- c:\Users\deeks\OneDrive\Desktop\Catch-AI-repo\recovery-service\fragments\extractor.py (LANGUAGE_PYTHON)
+- c:\Users\deeks\OneDrive\Desktop\Catch-AI-repo\recovery-service\static\styles.css (LANGUAGE_CSS)
+Browser State:
+  Page 20D8ACD1AD7770030D899A53D03F8CA1 (Thank you for installing AdGuard!) - https://welcome.adguard.com/v2/thankyou.html?clid=Wuj0N6&mv3=true&show_telemetry...
+    Viewport: 1707x898, Page Height: 3930
+  Page 211179F229CBB6119D4C7660471FEE86 (forensic-ui) - http://localhost:5173/dashboard
+    Viewport: 1552x847, Page Height: 847
+  Page 8A9775902F79ADA6794950C956F00963 (Lovable App) - https://b1c979d0-597f-4130-a5ce-ffad3fad9512.lovableproject.com/?__lovable_load_... [ACTIVE]
+    Viewport: 0x842, Page Height: 898
+  Page 0E37F1F5FB6A8AE3A8134E39C3607BB5 (Thank you for installing VeePN) - chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/src/pages/welcome/index.html
+    Viewport: 1707x898, Page Height: 939
+</ADDITIONAL_METADATA>
+<USER_SETTINGS_CHANGE>
+The user changed setting `Model Selection` from Gemini 3.1 Pro (Low) to Gemini 3.1 Pro (High). No need to comment on this change if the user doesn't ask about it. If reporting what model you are, please use a human readable name instead of the exact string.
+</USER_SETTINGS_CHANGE>

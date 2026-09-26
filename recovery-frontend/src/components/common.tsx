@@ -7,12 +7,12 @@ export type StatusLevel = 'ok' | 'running' | 'warning' | 'warn' | 'error' | 'unk
 export function StatusDot({ level }: { level: StatusLevel }) {
   const cls: Record<StatusLevel, string> = {
     ok:      'dot dot-green',
-    running: 'dot dot-cyan',
+    running: 'dot dot-crimson',
     warning: 'dot dot-amber',
     warn:    'dot dot-amber',
     error:   'dot dot-red',
     unknown: 'dot dot-muted',
-    info:    'dot dot-cyan',
+    info:    'dot dot-crimson',
     neutral: 'dot dot-muted',
   };
   return <span className={cls[level]} aria-label={level} />;
@@ -81,7 +81,7 @@ export function ErrorState({ title = 'Error', message, onRetry }: ErrorStateProp
 export function LoadingState({ label = 'Loading…' }: { label?: string }) {
   return (
     <div className="state-center" role="status" aria-live="polite">
-      <div className="spin" style={{ color: 'var(--cyan)', width: 28, height: 28 }}>
+      <div className="spin" style={{ color: 'var(--crimson)', width: 28, height: 28 }}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
           strokeLinecap="round" strokeLinejoin="round" width="28" height="28">
           <path d="M21 12a9 9 0 11-6.219-8.56" />

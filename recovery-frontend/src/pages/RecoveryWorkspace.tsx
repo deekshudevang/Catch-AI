@@ -56,7 +56,7 @@ export default function RecoveryWorkspace() {
          </SectionCard>
          <SectionCard className="p-4 flex flex-col items-center justify-center">
             <div className="text-muted text-sm uppercase tracking-wider mb-2">Started</div>
-            <div className="font-bold">{new Date(job.started_at).toLocaleTimeString()}</div>
+            <div className="font-bold">{job.started_at ? new Date(job.started_at).toLocaleTimeString() : '-'}</div>
          </SectionCard>
          <SectionCard className="p-4 flex flex-col items-center justify-center">
             <div className="text-muted text-sm uppercase tracking-wider mb-2">Recovered</div>

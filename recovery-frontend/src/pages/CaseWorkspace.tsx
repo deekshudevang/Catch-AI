@@ -41,7 +41,7 @@ export default function CaseWorkspace() {
     if (!caseId) return;
     casesApi.getCase(caseId)
       .then(setCaseData)
-      .catch(err => setError(err.message))
+      .catch((err: any) => setError(err.message))
       .finally(() => setLoading(false));
   }, [caseId]);
 
@@ -191,7 +191,7 @@ function CaseEvidenceView({ caseId }: { caseId: string }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    casesApi.getCaseEvidence(caseId).then(setEvidence).catch(err => setError(err.message)).finally(() => setLoading(false));
+    casesApi.getCaseEvidence(caseId).then(setEvidence).catch((err: any) => setError(err.message)).finally(() => setLoading(false));
   }, [caseId]);
 
   if (loading) return <LoadingState />;
@@ -243,7 +243,7 @@ function CaseRecoveryView({ caseId }: { caseId: string }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    casesApi.getCaseRecoveries(caseId).then(setRecoveries).catch(err => setError(err.message)).finally(() => setLoading(false));
+    casesApi.getCaseRecoveries(caseId).then(setRecoveries).catch((err: any) => setError(err.message)).finally(() => setLoading(false));
   }, [caseId]);
 
   if (loading) return <LoadingState />;
@@ -295,7 +295,7 @@ function CaseFilesView({ caseId }: { caseId: string }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    casesApi.getCaseFiles(caseId).then(setFiles).catch(err => setError(err.message)).finally(() => setLoading(false));
+    casesApi.getCaseFiles(caseId).then(setFiles).catch((err: any) => setError(err.message)).finally(() => setLoading(false));
   }, [caseId]);
 
   if (loading) return <LoadingState />;
@@ -341,7 +341,7 @@ function CaseTimelineView({ caseId }: { caseId: string }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    casesApi.getCaseTimeline(caseId).then(setEvents).catch(err => setError(err.message)).finally(() => setLoading(false));
+    casesApi.getCaseTimeline(caseId).then(setEvents).catch((err: any) => setError(err.message)).finally(() => setLoading(false));
   }, [caseId]);
 
   if (loading) return <LoadingState />;
@@ -377,7 +377,7 @@ function CaseFragmentsView({ caseId }: { caseId: string }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    casesApi.getCaseFragments(caseId).then(setFragments).catch(err => setError(err.message)).finally(() => setLoading(false));
+    casesApi.getCaseFragments(caseId).then(setFragments).catch((err: any) => setError(err.message)).finally(() => setLoading(false));
   }, [caseId]);
 
   if (loading) return <LoadingState />;
@@ -425,7 +425,7 @@ function CaseGraphView({ caseId }: { caseId: string }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    casesApi.getCaseGraph(caseId).then(setGraph).catch(err => setError(err.message)).finally(() => setLoading(false));
+    casesApi.getCaseGraph(caseId).then(setGraph).catch((err: any) => setError(err.message)).finally(() => setLoading(false));
   }, [caseId]);
 
   if (loading) return <LoadingState />;
@@ -457,7 +457,7 @@ function CaseValidationView({ caseId }: { caseId: string }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    casesApi.getCaseValidation(caseId).then(setValidations).catch(err => setError(err.message)).finally(() => setLoading(false));
+    casesApi.getCaseValidation(caseId).then(setValidations).catch((err: any) => setError(err.message)).finally(() => setLoading(false));
   }, [caseId]);
 
   if (loading) return <LoadingState />;
@@ -501,7 +501,7 @@ function CaseReportsView({ caseId }: { caseId: string }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    casesApi.getCaseReports(caseId).then(setReports).catch(err => setError(err.message)).finally(() => setLoading(false));
+    casesApi.getCaseReports(caseId).then(setReports).catch((err: any) => setError(err.message)).finally(() => setLoading(false));
   }, [caseId]);
 
   if (loading) return <LoadingState />;
@@ -547,7 +547,7 @@ function CaseAuditView({ caseId }: { caseId: string }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    casesApi.getCaseAudit(caseId).then(setAudits).catch(err => setError(err.message)).finally(() => setLoading(false));
+    casesApi.getCaseAudit(caseId).then(setAudits).catch((err: any) => setError(err.message)).finally(() => setLoading(false));
   }, [caseId]);
 
   if (loading) return <LoadingState />;

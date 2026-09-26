@@ -1,7 +1,7 @@
 import os
 import uuid
 import hashlib
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from app.database import engine as db_engine, Base, get_db
@@ -99,15 +99,15 @@ def recover_scan(req: RecoverRequest, db: Session = Depends(get_db)):
         fs_files = engine1_result["result"].get("files", [])
         for f in fs_files:
             f_path = f.get("path")
-            if f_path and os.path.isfile(f_path) and os.access(f_path, os.R_OK):
+            if f_path:
                 artifact = Artifact(
                     artifact_id=str(uuid.uuid4()),
                     recovery_job_id=job_id,
                     filename=f.get("name", os.path.basename(f_path)),
                     path=f_path,
-                    size=os.path.getsize(f_path),
+                    size=f.get("size", 0),
                     mime_type="application/octet-stream",
-                    sha256=calculate_sha256(f_path),
+                    sha256="",
                     source_engine="catch-filesystem",
                     created_at=datetime.utcnow()
                 )
@@ -119,15 +119,15 @@ def recover_scan(req: RecoverRequest, db: Session = Depends(get_db)):
         carved_files = engine2_result["result"].get("files", [])
         for f in carved_files:
             f_path = f.get("path")
-            if f_path and os.path.isfile(f_path) and os.access(f_path, os.R_OK):
+            if f_path:
                 artifact = Artifact(
                     artifact_id=str(uuid.uuid4()),
                     recovery_job_id=job_id,
                     filename=f.get("name", os.path.basename(f_path)),
                     path=f_path,
-                    size=os.path.getsize(f_path),
+                    size=f.get("size", 0),
                     mime_type="application/octet-stream",
-                    sha256=calculate_sha256(f_path),
+                    sha256="",
                     source_engine="catch-carving",
                     created_at=datetime.utcnow()
                 )
@@ -139,15 +139,15 @@ def recover_scan(req: RecoverRequest, db: Session = Depends(get_db)):
         deep_files = engine3_result["result"].get("files", [])
         for f in deep_files:
             f_path = f.get("path")
-            if f_path and os.path.isfile(f_path) and os.access(f_path, os.R_OK):
+            if f_path:
                 artifact = Artifact(
                     artifact_id=str(uuid.uuid4()),
                     recovery_job_id=job_id,
                     filename=f.get("name", os.path.basename(f_path)),
                     path=f_path,
-                    size=os.path.getsize(f_path),
+                    size=f.get("size", 0),
                     mime_type="application/octet-stream",
-                    sha256=calculate_sha256(f_path),
+                    sha256="",
                     source_engine="deep-recover",
                     created_at=datetime.utcnow()
                 )
@@ -177,6 +177,20 @@ def recover_scan(req: RecoverRequest, db: Session = Depends(get_db)):
         "status": "COMPLETED",
         "total_files_found": artifacts_count
     }
+
+@app.post("/api/recover/upload")
+async def recover_upload(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    repo_root = os.environ.get("REPO_ROOT", os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    evidence_dir = os.path.join(repo_root, "evidence")
+    os.makedirs(evidence_dir, exist_ok=True)
+    
+    file_location = os.path.join(evidence_dir, file.filename)
+    with open(file_location, "wb+") as f:
+        f.write(await file.read())
+        
+    req = RecoverRequest(image_path=file_location)
+    return recover_scan(req, db)
+
 
 @app.get("/api/recoveries/{recovery_id}/artifacts")
 def get_recovery_artifacts(recovery_id: str, db: Session = Depends(get_db)):
@@ -259,3 +273,234 @@ def get_recovery_job_compat(recovery_id: str, db: Session = Depends(get_db)):
         "reconstructions": 0,
         "validation_failures": 0
     }
+
+
+# --- Phase 11 Routes ---
+from app.services.sentinel import run_sentinel_background
+from app.services.salvage_engine import start_salvage
+from app.services.ai_repair import trigger_ai_repair
+from app.services.secure_delivery import deliver_artifact
+from app.models import MonitoredDirectory, RecoveryCandidate, AIRestorationJob, AuditEvent
+from pydantic import BaseModel
+
+class SentinelStartReq(BaseModel):
+    directory: str
+
+@app.post('/api/v1/sentinel/start')
+def sentinel_start(req: SentinelStartReq, db: Session = Depends(get_db)):
+    run_sentinel_background(req.directory)
+    return {'status': 'monitoring', 'directory': req.directory}
+
+@app.get('/api/v1/sentinel/status')
+def sentinel_status(db: Session = Depends(get_db)):
+    dirs = db.query(MonitoredDirectory).all()
+    return {'directories': [{'path': d.path, 'status': d.status} for d in dirs]}
+
+class SalvageReq(BaseModel):
+    candidate_id: str
+
+@app.post('/api/v1/recovery/salvage')
+def recovery_salvage(req: SalvageReq):
+    attempt_id = start_salvage(req.candidate_id)
+    return {'attempt_id': attempt_id, 'status': 'started'}
+
+@app.get('/api/v1/recovery/candidates')
+def get_candidates(db: Session = Depends(get_db)):
+    cands = db.query(RecoveryCandidate).all()
+    return {'candidates': [{'id': c.candidate_id, 'path': c.path, 'status': c.status} for c in cands]}
+
+class AIRepairReq(BaseModel):
+    artifact_id: str
+
+@app.post('/api/v1/ai/repair')
+def ai_repair_start(req: AIRepairReq):
+    res = trigger_ai_repair(req.artifact_id)
+    return res
+
+@app.get('/api/v1/ai/jobs')
+def ai_jobs(db: Session = Depends(get_db)):
+    jobs = db.query(AIRestorationJob).all()
+    return {'jobs': [{'id': j.job_id, 'status': j.status} for j in jobs]}
+
+class DeliveryReq(BaseModel):
+    artifact_id: str
+    destination: str
+
+@app.post('/api/v1/delivery/transfer')
+def delivery_transfer(req: DeliveryReq):
+    op = deliver_artifact(req.artifact_id, req.destination)
+    return {'operation_id': op, 'status': 'started'}
+
+@app.get('/api/v1/audit/logs')
+def audit_logs(db: Session = Depends(get_db)):
+    logs = db.query(AuditEvent).order_by(AuditEvent.created_at.desc()).limit(100).all()
+    return {'logs': [{'id': l.event_id, 'op': l.operation, 'details': l.details} for l in logs]}
+
+class FetchRequest(BaseModel):
+    source: Optional[str] = "DIRECTORY"
+    directory: str
+
+@app.get("/api/system/privileges")
+def system_privileges():
+    import ctypes
+    import psutil
+    try:
+        is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+    except Exception:
+        is_admin = False
+    
+    # Also check if we are running as a service
+    service_status = "OFFLINE"
+    try:
+        import win32serviceutil
+        import win32service
+        status = win32serviceutil.QueryServiceStatus("CatchAIRecoveryService")
+        if status[1] == win32service.SERVICE_RUNNING:
+            service_status = "ONLINE"
+    except Exception:
+        pass
+
+    return {
+        "service": "CatchAIRecoveryService",
+        "status": service_status if is_admin else "OFFLINE", # Since the request comes here, if we are admin, we're likely the service, but let's just report ONLINE if the windows service is running or if we are elevated. Actually let's report what's requested
+        "platform": "Windows",
+        "is_admin": is_admin,
+        "raw_ntfs_access": "AVAILABLE" if is_admin else "DENIED"
+    }
+
+@app.get("/api/system/service")
+def system_service():
+    installed = False
+    running = False
+    startup = "UNKNOWN"
+    privileged = False
+    
+    import ctypes
+    try:
+        privileged = ctypes.windll.shell32.IsUserAnAdmin() != 0
+    except Exception:
+        pass
+        
+    try:
+        import win32serviceutil
+        import win32service
+        import win32con
+        import win32api
+        
+        # Check status
+        status = win32serviceutil.QueryServiceStatus("CatchAIRecoveryService")
+        installed = True
+        if status[1] == win32service.SERVICE_RUNNING:
+            running = True
+            
+        # Get startup type
+        hscm = win32service.OpenSCManager(None, None, win32service.SC_MANAGER_CONNECT)
+        try:
+            hs = win32service.OpenService(hscm, "CatchAIRecoveryService", win32service.SERVICE_QUERY_CONFIG)
+            try:
+                config = win32service.QueryServiceConfig(hs)
+                if config[1] == win32service.SERVICE_AUTO_START:
+                    startup = "AUTO"
+                elif config[1] == win32service.SERVICE_DEMAND_START:
+                    startup = "MANUAL"
+            finally:
+                win32service.CloseServiceHandle(hs)
+        finally:
+            win32service.CloseServiceHandle(hscm)
+    except Exception as e:
+        installed = False
+
+    return {
+        "installed": installed,
+        "running": running,
+        "startup": startup,
+        "privileged": privileged
+    }
+
+
+@app.post("/api/recover/fetch")
+def recover_fetch(req: FetchRequest, db: Session = Depends(get_db)):
+    import sys
+    import ctypes
+    
+    root = os.path.abspath(r"C:\Users\deeks\OneDrive\Desktop\Catch-AI-repo")
+    target = os.path.abspath(req.directory)
+    if not target.startswith(root):
+        raise HTTPException(status_code=403, detail="Path outside allowed root.")
+    
+    try:
+        is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+    except Exception:
+        is_admin = False
+
+    if not is_admin:
+        return {"status": "PRIVILEGE_REQUIRED", "message": "Administrator privileges and raw NTFS access are required to scan for deleted files on Windows.", "candidates": []}
+
+    drive = os.path.splitdrive(target)[0]
+    if not drive:
+        drive = "C:"
+    volume_path = f"\\\\.\\{drive}"
+
+    try:
+        target_inode = os.stat(target).st_ino & 0xFFFFFFFFFFFF
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Could not stat directory: {e}")
+
+    parser_path = os.path.join(root, "forensic-engines", "catch-filesystem", "src")
+    if parser_path not in sys.path:
+        sys.path.append(parser_path)
+    
+    try:
+        from ntfs_parser import NTFSParser
+    except ImportError:
+        return {"status": "ERROR", "message": "NTFS parser module could not be loaded.", "candidates": []}
+
+    parser = NTFSParser(volume_path)
+    if not parser.initialize():
+        return {"status": "ERROR", "message": f"Could not initialize NTFS parser for {volume_path}", "candidates": []}
+        
+    candidates = parser.find_deleted_in_mft(target_inode=target_inode)
+    parser.close()
+    
+    results = []
+    for c in candidates:
+        cand_id = str(uuid.uuid4())
+        fake_path = os.path.join(target, c['name'])
+        rc = RecoveryCandidate(
+            candidate_id=cand_id,
+            path=fake_path,
+            filename=c['name'],
+            size=c['size'],
+            status="DETECTED",
+            source="fetch_ntfs",
+            event_type="DELETED"
+        )
+        db.add(rc)
+        results.append({
+            "candidate_id": cand_id,
+            "name": c['name'],
+            "size": c['size'],
+            "status": "DETECTED"
+        })
+    db.commit()
+    
+    return {
+        "status": "SUCCESS", 
+        "message": f"Found {len(results)} deleted files in {target}", 
+        "candidates": results
+    }
+
+class MonitorRequest(BaseModel):
+    directory: str
+
+@app.post("/api/recover/monitor")
+def recover_monitor(req: MonitorRequest, db: Session = Depends(get_db)):
+    run_sentinel_background(req.directory)
+    return {"status": "monitoring", "directory": req.directory}
+
+from fastapi.staticfiles import StaticFiles
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+os.makedirs(static_dir, exist_ok=True)
+app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
+
+

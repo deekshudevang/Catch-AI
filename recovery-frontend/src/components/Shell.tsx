@@ -61,75 +61,47 @@ const NAV: NavGroup[] = [
 
 export function Sidebar() {
   return (
-    <nav className="sidebar" aria-label="Primary navigation">
+    <nav className="w-64 bg-card border-r border-border flex flex-col h-full shrink-0" aria-label="Primary navigation">
       {/* Logo */}
-      <div style={{
-        padding: 'var(--sp-4)',
-        borderBottom: '1px solid var(--border)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 10,
-      }}>
-        <div style={{
-          width: 28, height: 28,
-          background: 'var(--cyan-dim)',
-          border: '1px solid var(--cyan-border)',
-          borderRadius: 'var(--r-md)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <Activity size={16} color="var(--cyan)" />
+      <div className="flex items-center gap-3 p-5 border-b border-border">
+        <div className="w-8 h-8 bg-primary/10 border border-primary/20 rounded-md flex items-center justify-center">
+          <Activity size={18} className="text-primary" />
         </div>
-        <div style={{ lineHeight: 1.1 }}>
-          <div style={{ fontSize: 'var(--text-md)', fontWeight: 700, color: 'var(--text)' }}>
+        <div className="leading-tight">
+          <div className="text-base font-bold text-foreground font-display">
             CATCH-AI
           </div>
-          <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-3)' }}>
+          <div className="text-xs text-muted-foreground">
             Recovery Platform
           </div>
         </div>
       </div>
 
       {/* Nav groups */}
-      <div style={{ flex: 1, padding: 'var(--sp-3) 0 var(--sp-6)' }}>
+      <div className="flex-1 py-4 overflow-y-auto">
         {NAV.map(group => (
-          <div key={group.label}>
-            <div className="section-label">{group.label}</div>
-            {group.items.map(item => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                style={({ isActive }) => ({
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  padding: '7px 16px',
-                  fontSize: 'var(--text-base)',
-                  color: isActive ? 'var(--cyan)' : 'var(--text-2)',
-                  background: isActive ? 'var(--cyan-dim)' : 'transparent',
-                  borderRight: isActive ? '2px solid var(--cyan)' : '2px solid transparent',
-                  textDecoration: 'none',
-                  fontWeight: isActive ? 500 : 400,
-                  transition: 'all var(--t-fast)',
-                })}
-                onMouseEnter={e => {
-                  const el = e.currentTarget as HTMLElement;
-                  if (!el.dataset.active) {
-                    el.style.color = 'var(--text)';
-                    el.style.background = 'var(--surface-2)';
+          <div key={group.label} className="mb-6 px-3">
+            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-3">
+              {group.label}
+            </div>
+            <div className="flex flex-col space-y-1">
+              {group.items.map(item => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    }`
                   }
-                }}
-                onMouseLeave={e => {
-                  const el = e.currentTarget as HTMLElement;
-                  if (!el.dataset.active) {
-                    el.style.color = '';
-                    el.style.background = '';
-                  }
-                }}
-              >
-                <item.icon size={15} />
-                <span>{item.label}</span>
-              </NavLink>
-            ))}
+                >
+                  <item.icon size={16} />
+                  <span>{item.label}</span>
+                </NavLink>
+              ))}
+            </div>
           </div>
         ))}
       </div>
@@ -195,14 +167,14 @@ export function Topbar() {
   const totalEngines = recovery?.engines ? Object.keys(recovery.engines).length : 8;
 
   return (
-    <header className="topbar" role="banner">
+    <header className="h-16 border-b border-border bg-card/80 backdrop-blur flex items-center px-6 justify-between shrink-0" role="banner">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 flex-1" style={{ minWidth: 0 }}>
-        <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-3)', fontWeight: 500 }}>
+      <div className="flex items-center gap-2 flex-1 min-w-0">
+        <span className="text-sm text-muted-foreground font-medium">
           CATCH-AI
         </span>
-        <ChevronRight size={14} color="var(--text-3)" />
-        <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-2)', fontWeight: 500 }}>
+        <ChevronRight size={14} className="text-muted-foreground" />
+        <span className="text-sm text-foreground font-medium">
           {pageLabel}
         </span>
       </div>
@@ -233,8 +205,7 @@ export function Topbar() {
 
 function TopbarStatus({ label, level }: { label: string; level: StatusLevel }) {
   return (
-    <div className="flex items-center gap-2"
-      style={{ fontSize: 'var(--text-sm)', color: 'var(--text-2)' }}>
+    <div className="flex items-center gap-2 text-sm text-muted-foreground">
       <StatusDot level={level} />
       <span>{label}</span>
     </div>

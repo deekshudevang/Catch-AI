@@ -1,12 +1,20 @@
 export interface Case {
   id: string;
   name: string;
-  description: string;
   status: string;
+  description: string;
   created_at: string;
   updated_at: string;
   evidence_count: number;
   recoveries_count: number;
+}
+
+export interface CaseAudit {
+  id: string;
+  action: string;
+  timestamp: string;
+  user: string;
+  details: string;
 }
 
 export interface CaseEvidence {
@@ -14,19 +22,13 @@ export interface CaseEvidence {
   filename: string;
   format: string;
   size_bytes: number;
-  sha256: string;
-  filesystem: string;
   status: string;
-  added_at: string;
 }
 
 export interface CaseRecovery {
   id: string;
-  evidence_id: string;
   status: string;
   started_at: string;
-  completed_at: string | null;
-  engines_used: string[];
   fragments_extracted: number;
   files_recovered: number;
 }
@@ -36,19 +38,15 @@ export interface CaseFile {
   filename: string;
   detected_type: string;
   size_bytes: number;
-  recovery_method: string;
-  source_engine: string;
-  fragments_count: number;
-  integrity_score: number;
   confidence: number;
   status: string;
 }
 
 export interface CaseTimelineEvent {
   id: string;
+  timestamp: string;
   type: string;
   description: string;
-  timestamp: string;
   actor: string;
 }
 
@@ -61,22 +59,9 @@ export interface CaseFragment {
   status: string;
 }
 
-export interface CaseGraphNode {
-  id: string;
-  label: string;
-  type: string;
-}
-
-export interface CaseGraphEdge {
-  id: string;
-  source: string;
-  target: string;
-  score: number;
-}
-
 export interface CaseGraphData {
-  nodes: CaseGraphNode[];
-  edges: CaseGraphEdge[];
+  nodes: any[];
+  edges: any[];
 }
 
 export interface CaseValidation {
@@ -95,56 +80,17 @@ export interface CaseReport {
   url: string;
 }
 
-export interface CaseAudit {
-  id: string;
-  action: string;
-  user: string;
-  timestamp: string;
-  details: string;
-}
-
-export interface CasesApi {
-  getCases(): Promise<Case[]>;
-  createCase(name: string, description: string): Promise<Case>;
-  getCase(caseId: string): Promise<Case>;
-  getCaseEvidence(caseId: string): Promise<CaseEvidence[]>;
-  getCaseRecoveries(caseId: string): Promise<CaseRecovery[]>;
-  getCaseFiles(caseId: string): Promise<CaseFile[]>;
-  getCaseTimeline(caseId: string): Promise<CaseTimelineEvent[]>;
-  getCaseFragments(caseId: string): Promise<CaseFragment[]>;
-  getCaseGraph(caseId: string): Promise<CaseGraphData>;
-  getCaseValidation(caseId: string): Promise<CaseValidation[]>;
-  getCaseReports(caseId: string): Promise<CaseReport[]>;
-  getCaseAudit(caseId: string): Promise<CaseAudit[]>;
-}
-
-const BACKEND_URL = import.meta.env.VITE_BACKEND_API ?? 'http://localhost:8000';
-
-async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, init);
-  if (!res.ok) {
-    const text = await res.text().catch(() => res.statusText);
-    throw new Error(`HTTP ${res.status}: ${text}`);
-  }
-  return res.json() as Promise<T>;
-}
-
-export const casesApi: CasesApi = {
-  getCases: () => apiFetch<Case[]>(`${BACKEND_URL}/api/cases`),
-  createCase: (name, description) => 
-    apiFetch<Case>(`${BACKEND_URL}/api/cases`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, description })
-    }),
-  getCase: (caseId) => apiFetch<Case>(`${BACKEND_URL}/api/cases/${caseId}`),
-  getCaseEvidence: (caseId) => apiFetch<CaseEvidence[]>(`${BACKEND_URL}/api/cases/${caseId}/evidence`),
-  getCaseRecoveries: (caseId) => apiFetch<CaseRecovery[]>(`${BACKEND_URL}/api/cases/${caseId}/recoveries`),
-  getCaseFiles: (caseId) => apiFetch<CaseFile[]>(`${BACKEND_URL}/api/cases/${caseId}/files`),
-  getCaseTimeline: (caseId) => apiFetch<CaseTimelineEvent[]>(`${BACKEND_URL}/api/cases/${caseId}/timeline`),
-  getCaseFragments: (caseId) => apiFetch<CaseFragment[]>(`${BACKEND_URL}/api/cases/${caseId}/fragments`),
-  getCaseGraph: (caseId) => apiFetch<CaseGraphData>(`${BACKEND_URL}/api/cases/${caseId}/graph`),
-  getCaseValidation: (caseId) => apiFetch<CaseValidation[]>(`${BACKEND_URL}/api/cases/${caseId}/validation`),
-  getCaseReports: (caseId) => apiFetch<CaseReport[]>(`${BACKEND_URL}/api/cases/${caseId}/reports`),
-  getCaseAudit: (caseId) => apiFetch<CaseAudit[]>(`${BACKEND_URL}/api/cases/${caseId}/audit`),
+export const casesApi = {
+  getCases: async (): Promise<Case[]> => ([]),
+  getCase: async (_id: string): Promise<Case> => ({} as Case),
+  createCase: async (_name: string, _desc: string): Promise<Case> => ({} as Case),
+  getCaseAudit: async (_id: string): Promise<CaseAudit[]> => [],
+  getCaseGraph: async (_id: string): Promise<CaseGraphData> => ({ nodes: [], edges: [] }),
+  getCaseValidation: async (_id: string): Promise<CaseValidation[]> => [],
+  getCaseReports: async (_id: string): Promise<CaseReport[]> => [],
+  getCaseEvidence: async (_id: string): Promise<CaseEvidence[]> => [],
+  getCaseRecoveries: async (_id: string): Promise<CaseRecovery[]> => [],
+  getCaseFiles: async (_id: string): Promise<CaseFile[]> => [],
+  getCaseTimeline: async (_id: string): Promise<CaseTimelineEvent[]> => [],
+  getCaseFragments: async (_id: string): Promise<CaseFragment[]> => [],
 };

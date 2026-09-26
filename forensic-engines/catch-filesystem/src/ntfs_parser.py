@@ -1,4 +1,4 @@
-﻿"""
+"""
 NTFS Parser Module
 Xß╗¡ l├╜ cß║Ñu tr├║c NTFS v├á truy cß║¡p Master File Table
 """
@@ -198,14 +198,17 @@ class NTFSParser:
                     
                 full_path = f"{current_path}{name}"
                 is_dir = entry.info.meta and entry.info.meta.type == pytsk3.TSK_FS_META_TYPE_DIR
+                is_deleted = bool(entry.info.name.flags & pytsk3.TSK_FS_NAME_FLAG_UNALLOC)
                 
-                files.append({
-                    'name': name,
-                    'path': full_path,
-                    'size': entry.info.meta.size if entry.info.meta else 0,
-                    'inode': entry.info.meta.addr if entry.info.meta else 0,
-                    'is_dir': is_dir
-                })
+                if is_deleted:
+                    files.append({
+                        'name': name,
+                        'path': full_path,
+                        'size': entry.info.meta.size if entry.info.meta else 0,
+                        'inode': entry.info.meta.addr if entry.info.meta else 0,
+                        'is_dir': is_dir,
+                        'is_deleted': True
+                    })
                 
                 if is_dir:
                     try:
@@ -238,6 +241,57 @@ class NTFSParser:
                     return b""
         return b""
     
+    def find_deleted_in_mft(self, target_inode: int = None, limit_inodes=None):
+        import struct
+        candidates = []
+        if not self.fs_info:
+            return candidates
+        
+        first = self.fs_info.info.first_inum
+        last = self.fs_info.info.last_inum
+        if limit_inodes:
+            last = min(last, first + limit_inodes)
+
+        for i in range(first, last + 1):
+            try:
+                file = self.fs_info.open_meta(inode=i)
+                if not file or not file.info or not file.info.meta:
+                    continue
+                
+                is_unalloc = (file.info.meta.flags & pytsk3.TSK_FS_META_FLAG_UNALLOC) != 0
+                if not is_unalloc:
+                    continue
+                
+                filename = None
+                parent_mft = None
+                for attr in file:
+                    if attr.info.type == 48: # pytsk3.TSK_FS_ATTR_TYPE_NTFS_FNAME
+                        try:
+                            data = file.read_random(0, attr.info.size, attr.info.type, attr.info.id)
+                            if data and len(data) >= 66:
+                                parent_ref = struct.unpack("<Q", data[0:8])[0]
+                                parent_mft = parent_ref & 0xFFFFFFFFFFFF
+                                name_len = data[64]
+                                name_bytes = data[66:66+name_len*2]
+                                filename = name_bytes.decode('utf-16le', errors='ignore')
+                                break
+                        except Exception:
+                            pass
+                
+                if filename:
+                    if target_inode is not None and parent_mft != target_inode:
+                        continue
+                    candidates.append({
+                        'inode': i,
+                        'name': filename,
+                        'size': file.info.meta.size,
+                        'parent_inode': parent_mft
+                    })
+            except Exception:
+                pass
+        
+        return candidates
+
     def close(self):
         """
         ─É├│ng parser v├á giß║úi ph├│ng t├ái nguy├¬n

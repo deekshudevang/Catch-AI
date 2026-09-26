@@ -13,7 +13,7 @@ export default function FragmentExplorer() {
   useEffect(() => {
     setLoading(true);
     fragmentsApi.getFragments(recoveryId)
-      .then(res => setFragments(res.data))
+      .then((res: any) => setFragments(res.data))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [recoveryId]);

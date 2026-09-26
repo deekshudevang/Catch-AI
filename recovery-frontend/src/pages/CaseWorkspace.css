@@ -22,7 +22,7 @@
 }
 
 .case-breadcrumbs a:hover {
-  color: var(--cyan);
+  color: var(--crimson);
 }
 
 .case-breadcrumbs span {
@@ -94,8 +94,8 @@
 }
 
 .case-nav-item.active {
-  background: var(--cyan-dim);
-  color: var(--cyan);
+  background: var(--crimson-dim);
+  color: var(--crimson);
   font-weight: 500;
 }
 

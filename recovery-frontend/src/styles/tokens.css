@@ -21,9 +21,9 @@
   --text-3:      #6E7681;
 
   /* --- Primary Accent: Forensic Red --- */
-  --cyan:        #C81B1C;
-  --cyan-dim:    rgba(200, 27, 28, 0.12);
-  --cyan-border: rgba(200, 27, 28, 0.3);
+  --crimson:        #C81B1C;
+  --crimson-dim:    rgba(200, 27, 28, 0.12);
+  --crimson-border: rgba(200, 27, 28, 0.3);
 
   /* --- Success: Green --- */
   --green:       #34D399;

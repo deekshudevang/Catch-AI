@@ -6,63 +6,60 @@ import './index.css';
 
 // ─── Lazy pages ───────────────────────────────────────────────────────────────
 const Dashboard     = lazy(() => import('./pages/Dashboard'));
-const CaseList      = lazy(() => import('./pages/CaseList'));
-const CaseWorkspace = lazy(() => import('./pages/CaseWorkspace'));
 const Recovery      = lazy(() => import('./pages/RecoveryWorkspace'));
-const Fragments     = lazy(() => import('./pages/FragmentExplorer'));
-const GraphPage     = lazy(() => import('./pages/FragmentGraph'));
-const Validation    = lazy(() => import('./pages/ValidationUI'));
-const EngineMonitor = lazy(() => import('./pages/RecoveryEngines'));
-const Reports       = lazy(() => import('./pages/Reports'));
+const Landing       = lazy(() => import('./pages/Landing'));
 
-// ─── Page fallback ────────────────────────────────────────────────────────────
-function PagePlaceholder({ name }: { name: string }) {
-  return (
-    <div style={{
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'center', height: '60vh', gap: 12,
-    }}>
-      <p style={{ color: 'var(--text-3)', fontSize: 'var(--text-sm)' }}>
-        {name} — page coming soon
-      </p>
-    </div>
-  );
-}
+import {
+  Cases,
+  Fragments,
+  Graph,
+  Validation,
+  Engines,
+  Reports,
+  Timeline,
+  AuditLog,
+  Settings
+} from './pages/Prototypes';
 
+// ─── Page fallback removed ────────────────────────────────────────────────────────────
 // ─── App ─────────────────────────────────────────────────────────────────────
 function App() {
   return (
     <Router>
-      <div className="app-shell">
-        <Sidebar />
-        <div className="app-body">
-          <Topbar />
-          <main className="page-content" role="main">
-            <Suspense fallback={<LoadingState label="Loading page…" />}>
-              <Routes>
-                <Route path="/"            element={<Navigate to="/dashboard" replace />} />
-                <Route path="/dashboard"   element={<Dashboard />} />
-                <Route path="/cases"       element={<CaseList />} />
-                <Route path="/cases/:caseId" element={<CaseWorkspace />} />
-                <Route path="/cases/:caseId/*" element={<CaseWorkspace />} />
-                <Route path="/recovery/:recoveryId" element={<Recovery />} />
-                <Route path="/recovery/:recoveryId/*" element={<Recovery />} />
-                <Route path="/fragments"   element={<Fragments />} />
-                <Route path="/graph"       element={<GraphPage />} />
-                <Route path="/validation"  element={<Validation />} />
-                <Route path="/engines"     element={<EngineMonitor />} />
-                <Route path="/reports"     element={<Reports />} />
-                <Route path="/timeline"    element={<PagePlaceholder name="Timeline" />} />
-                <Route path="/audit"       element={<PagePlaceholder name="AuditLog" />} />
-                <Route path="/settings"    element={<PagePlaceholder name="SettingsPage" />} />
-                {/* legacy paths */}
-                <Route path="/recovery-engines" element={<Navigate to="/engines" replace />} />
-                <Route path="*"            element={<Navigate to="/dashboard" replace />} />
-              </Routes>
-            </Suspense>
-          </main>
-        </div>
-      </div>
+      <Suspense fallback={<LoadingState label="Loading page…" />}>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/*" element={
+            <div className="flex h-screen w-full bg-background text-foreground overflow-hidden">
+              <Sidebar />
+              <div className="flex-1 flex flex-col h-full overflow-hidden">
+                <Topbar />
+                <main className="flex-1 overflow-auto bg-muted/30 p-6" role="main">
+                  <Routes>
+                    <Route path="/dashboard"   element={<Dashboard />} />
+                    <Route path="/cases"       element={<Cases />} />
+                    <Route path="/cases/:caseId" element={<Cases />} />
+                    <Route path="/cases/:caseId/*" element={<Cases />} />
+                    <Route path="/recovery/:recoveryId" element={<Recovery />} />
+                    <Route path="/recovery/:recoveryId/*" element={<Recovery />} />
+                    <Route path="/fragments"   element={<Fragments />} />
+                    <Route path="/graph"       element={<Graph />} />
+                    <Route path="/validation"  element={<Validation />} />
+                    <Route path="/engines"     element={<Engines />} />
+                    <Route path="/reports"     element={<Reports />} />
+                    <Route path="/timeline"    element={<Timeline />} />
+                    <Route path="/audit"       element={<AuditLog />} />
+                    <Route path="/settings"    element={<Settings />} />
+                    {/* legacy paths */}
+                    <Route path="/recovery-engines" element={<Navigate to="/engines" replace />} />
+                    <Route path="*"            element={<Navigate to="/dashboard" replace />} />
+                  </Routes>
+                </main>
+              </div>
+            </div>
+          } />
+        </Routes>
+      </Suspense>
     </Router>
   );
 }
